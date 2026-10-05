@@ -112,7 +112,8 @@ fun MainGameScreen(
                     onAttemptBreakthrough = { viewModel.attemptBreakthrough() },
                     onConsumePill = { item -> viewModel.consumePill(item) },
                     onTanDoc = { years -> viewModel.tanDoc(years) },
-                    onConsultOldDemon = { viewModel.consultOldDemon() }
+                    onConsultOldDemon = { viewModel.consultOldDemon() },
+                    onTriggerDarkEvent = { viewModel.triggerDarkEvent() }
                 )
                 GameTab.THIEN_CO -> ThienCoTab(
                     state = state,
@@ -191,6 +192,15 @@ fun MainGameScreen(
         SoulClashDialog(
             clash = state.soulClash,
             onFightSoul = { choice -> viewModel.fightSoulClash(choice) }
+        )
+    }
+
+    // DIALOG 5: SỰ KIỆN TU TIÊN HẮC ÁM (3 HƯỚNG: CẨU ĐẠO, TRANH ĐOẠT, ẨN NHẪN / TÀ ĐẠO)
+    state.activeDarkEvent?.let { event ->
+        com.example.ui.dialogs.DarkEventDialog(
+            event = event,
+            onChoose = { path -> viewModel.resolveDarkEventChoice(path) },
+            onDismiss = { viewModel.dismissDarkEvent() }
         )
     }
 }

@@ -31,7 +31,8 @@ fun DongPhuTab(
     onAttemptBreakthrough: () -> Unit,
     onConsumePill: (item: InventoryItem) -> Unit,
     onTanDoc: (years: Int) -> Unit,
-    onConsultOldDemon: () -> Unit
+    onConsultOldDemon: () -> Unit,
+    onTriggerDarkEvent: () -> Unit = {}
 ) {
     val remainingLifespan = maxOf(0, state.maxLifespan - state.age)
     val pillItems = state.inventory.filter { it.category == ItemCategory.DAN_DUOC && it.count > 0 }
@@ -101,6 +102,82 @@ fun DongPhuTab(
                         BeQuanButton(years = 3, enabled = remainingLifespan > 0, modifier = Modifier.weight(1f)) { onBeQuan(3) }
                         BeQuanButton(years = 5, enabled = remainingLifespan > 0, modifier = Modifier.weight(1f)) { onBeQuan(5) }
                         BeQuanButton(years = 10, enabled = remainingLifespan > 0, modifier = Modifier.weight(1f)) { onBeQuan(10) }
+                    }
+                }
+            }
+        }
+
+        // SECTION: LỊCH LUYỆN SINH TỬ (KỲ DUYÊN HẮC ÁM - CẨU ĐẠO / TRANH ĐOẠT / ẨN NHẪN TÀ ĐẠO)
+        item {
+            Surface(
+                color = DarkSlate,
+                shape = RoundedCornerShape(12.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, FatalPoison.copy(alpha = 0.8f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Dangerous,
+                                contentDescription = "Kỳ duyên hắc ám",
+                                tint = FatalPoison,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Kỳ Duyên Hắc Ám (Lịch Luyện)",
+                                color = FatalPoison,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                        Text(
+                            text = "3 Lựa Chọn Sinh Tử",
+                            color = TextMuted,
+                            fontSize = 10.5.sp
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "Vào hiểm địa tầm bảo, đối mặt ma quái đoạt xá. 3 hướng lựa chọn: [Cẩu Đạo] an toàn, [Tranh Đoạt] liều mạng, hoặc [Ẩn Nhẫn / Tà Đạo] mưu mô phản sát.",
+                        color = TextSecondary,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    OutlinedButton(
+                        onClick = onTriggerDarkEvent,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(42.dp)
+                            .testTag("btn_trigger_dark_event"),
+                        shape = RoundedCornerShape(8.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, FatalPoison),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = FatalPoison
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Explore,
+                            contentDescription = "Xuất sơn lịch luyện",
+                            modifier = Modifier.size(16.dp),
+                            tint = FatalPoison
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Xuất Sơn Lịch Luyện (Gặp Kỳ Ngộ Sinh Tử)",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 12.sp
+                        )
                     }
                 }
             }

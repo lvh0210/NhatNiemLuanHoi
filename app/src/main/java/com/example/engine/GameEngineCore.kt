@@ -813,6 +813,74 @@ class GameEngineCore(
         }
     }
 
+    /**
+     * Kích hoạt Sự Kiện Tu Tiên Hắc Ám (3 hướng lựa chọn: Cẩu Đạo, Tranh Đoạt, Ẩn Nhẫn / Tà Đạo)
+     */
+    fun triggerDarkEvent(event: DarkCultivationEvent? = null) {
+        val s = _gameState.value
+        if (s.isDead) return
+        val pool = com.example.content.GameContentRegistry.DarkEvents.ALL
+        val chosen = event ?: pool.random()
+        updateState(s.copy(activeDarkEvent = chosen, darkEventResultNarrative = null))
+        addLog(s.age, "Kỳ Duyên", "Ngươi tao ngộ sinh tử kiếp: ${chosen.title}", "WARNING")
+    }
+
+    /**
+     * Giải quyết lựa chọn trong Sự Kiện Tu Tiên Hắc Ám
+     * Hậu quả tính toán trực tiếp vào: lifespan, qi, pillToxin, karma, divineSense
+     */
+    fun resolveDarkEventChoice(choicePath: ChoicePath) {
+        val s = _gameState.value
+        val event = s.activeDarkEvent ?: return
+        val choice = when (choicePath) {
+            ChoicePath.CAU_DAO -> event.cauDao
+            ChoicePath.TRANH_DOAT -> event.tranhDoat
+            ChoicePath.AN_NHAN_TA_DAO -> event.anNhanTaDao
+        }
+
+        val eff = choice.effects
+        val newLifespan = (s.maxLifespan + eff.lifespan).coerceAtLeast(30)
+        val newQi = (s.qi + eff.qi).coerceIn(0L, s.maxQi)
+        val newPillToxin = (s.pillToxicity + eff.pillToxin).coerceIn(0, 100)
+        val newSatKhi = (s.satKhi + eff.karma).coerceAtLeast(0)
+        val newThanThuc = (s.thanThuc + eff.divineSense).coerceAtLeast(10)
+
+        val statSummary = buildString {
+            if (eff.lifespan != 0) append("Thọ ${if (eff.lifespan > 0) "+${eff.lifespan}" else "${eff.lifespan}"}n ")
+            if (eff.qi != 0L) append("Khí ${if (eff.qi > 0) "+${eff.qi}" else "${eff.qi}"} ")
+            if (eff.pillToxin != 0) append("Độc ${if (eff.pillToxin > 0) "+${eff.pillToxin}%" else "${eff.pillToxin}%"} ")
+            if (eff.karma != 0) append("Sát ${if (eff.karma > 0) "+${eff.karma}" else "${eff.karma}"} ")
+            if (eff.divineSense != 0) append("Thức ${if (eff.divineSense > 0) "+${eff.divineSense}" else "${eff.divineSense}"}")
+        }.trim()
+
+        addLog(
+            s.age,
+            choice.path.name,
+            "[${choice.label}]: ${choice.outcomeNarrative} [$statSummary]",
+            if (eff.karma >= 40 || eff.lifespan < 0) "DANGER" else "SUCCESS"
+        )
+
+        updateState(
+            s.copy(
+                maxLifespan = newLifespan,
+                qi = newQi,
+                pillToxicity = newPillToxin,
+                satKhi = newSatKhi,
+                thanThuc = newThanThuc,
+                darkEventResultNarrative = "${choice.outcomeNarrative}\n[$statSummary]",
+                activeDarkEvent = null
+            )
+        )
+
+        if (s.age >= newLifespan) {
+            triggerToaHoa()
+        }
+    }
+
+    fun dismissDarkEvent() {
+        updateState(_gameState.value.copy(activeDarkEvent = null, darkEventResultNarrative = null))
+    }
+
     fun gambleAncientStone(tierCost: Long = 100L) {
         val s = _gameState.value
         if (s.isDead) return

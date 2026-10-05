@@ -73,9 +73,9 @@ class CharacterCreationViewModel : ViewModel() {
         val randomName = getRandomName()
 
         // Lấy 3 từ điều khởi đầu hợp lệ
-        val t0 = pool.first { it.id == "t_trong_sinh" }     // Thần Thoại (+3)
-        val t1 = pool.first { it.id == "t_gia_toc_diet" }   // Tai Họa (-3) để cân bằng Thần Thoại!
-        val t2 = pool.first { it.id == "t_cau_dao" }        // Hiếm Có (+1)
+        val t0 = pool.firstOrNull { it.id == "t_trong_sinh" } ?: pool.first { it.isHighTier }
+        val t1 = pool.firstOrNull { it.id == "t_gia_toc_diet" } ?: pool.first { it.isTaiHoa }
+        val t2 = pool.firstOrNull { it.id == "t_cau_dao" } ?: pool.first { it.pointCost in 0..1 }
 
         _uiState.value = CharacterCreationUiState(
             name = randomName,

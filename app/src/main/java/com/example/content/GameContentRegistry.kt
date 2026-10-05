@@ -57,21 +57,34 @@ object GameContentRegistry {
         private val _customTraits = mutableListOf<DestinyTrait>()
 
         val BASE_TRAITS: List<DestinyTrait> = listOf(
-            // -------------------------------------------------------------
-            // TIER 1: THẦN THOẠI (pointCost = +3, Yêu cầu ít nhất 1 Tai Họa)
-            // -------------------------------------------------------------
+            // =============================================================
+            // 1. THẦN THOẠI (pointCost = +3, Chi phí Công Đức dương: 135 - 140)
+            // =============================================================
             DestinyTrait(
                 id = "t_hoang_co",
                 name = "Hoang Cổ Thánh Thể",
                 tier = "Thần Thoại",
-                boonDesc = "Thể phách vô địch, cận chiến x2, miễn nhiễm 100% Đan Độc, Căn Cốt +40, Thọ Nguyên +25.",
-                curseDesc = "Thiên Đạo chèn ép: Linh khí cần x3; Khởi đầu gánh chịu +40 điểm Sát Khí.",
-                costCongDuc = 130,
+                boonDesc = "Nhục thân chí tôn vô địch: Căn Cốt +45, Thọ Nguyên +30, cận chiến x2.5 sát thương, vĩnh viễn miễn nhiễm 100% Đan Độc.",
+                curseDesc = "Thiên Đạo giáng tội chèn ép: Đoạn tuyệt thiên địa linh khí! Đột phá cần lượng Linh Khí x3, Lôi Kiếp uy lực x2; Khởi đầu gánh chịu +40 Sát Khí bị kẻ thù truy sát.",
+                costCongDuc = 140,
                 pointCost = 3,
                 lifespanMod = 25,
                 canCotMod = 40,
                 satKhiMod = 40,
                 qiMultiplierMod = 3L
+            ),
+            DestinyTrait(
+                id = "t_thai_so_hon_don",
+                name = "Thái Sơ Hỗn Độn Khí",
+                tier = "Thần Thoại",
+                boonDesc = "Thai nghén luồng Tiên Khí nguyên sơ: Ngộ Tính +50, Thần Thức +35, Đạo Tâm +20, đồng hóa vạn pháp ngũ hành.",
+                curseDesc = "Đạo khí nghịch thiên thu hút Thiên Ma thức hải: Mỗi lần đột phá giáng hạ Cửu U Tâm Ma Kiếp hung hiểm x2; Khởi đầu +25 Sát Khí oán niệm.",
+                costCongDuc = 135,
+                pointCost = 3,
+                ngoTinhMod = 50,
+                thanThucMod = 35,
+                daoTamMod = 20,
+                satKhiMod = 25
             ),
             DestinyTrait(
                 id = "t_trong_sinh",
@@ -98,82 +111,93 @@ object GameContentRegistry {
                 ngoTinhMod = 15,
                 thanThucMod = 10
             ),
+
+            // =============================================================
+            // 2. SỬ THI (pointCost = +2, Chi phí Công Đức dương: 90 - 95)
+            // =============================================================
             DestinyTrait(
-                id = "t_hon_don",
-                name = "Hỗn Độn Đạo Thể",
-                tier = "Thần Thoại",
-                boonDesc = "Đạo thể nguyên sơ, tương thích vạn pháp ngũ hành, Ngộ Tính +40, Căn Cốt +30, Đạo Tâm +10.",
-                curseDesc = "Thiên Đạo đố kỵ: Tiêu hao 120 Công Đức, lôi kiếp hung hiểm x1.5.",
-                costCongDuc = 120,
-                pointCost = 3,
-                ngoTinhMod = 40,
-                canCotMod = 30,
-                daoTamMod = 10
-            ),
-            DestinyTrait(
-                id = "t_kiem_tien_tai_the",
-                name = "Kiếm Tiên Tái Thế",
-                tier = "Thần Thoại",
-                boonDesc = "Sinh ra ngậm kiếm phách: Ngộ Tính +45, Căn Cốt +25, sát thương kiếm thuật x2.5.",
-                curseDesc = "Kiếm sát cô độc: Khởi đầu +30 Sát Khí, dễ thu hút kiếm tu khiêu chiến.",
-                costCongDuc = 115,
-                pointCost = 3,
-                ngoTinhMod = 45,
-                canCotMod = 25,
+                id = "t_tan_hon_lao_gia_gia",
+                name = "Tàn Hồn Lão Gia Gia",
+                tier = "Sử Thi",
+                boonDesc = "Giới chỉ phong ấn tàn hồn Tiên Tôn/Lão Ma: Thường xuyên điểm hóa bí thuật, Thần Thức +30, Ngộ Tính +25, miễn tử đòn trí mạng 1 lần.",
+                curseDesc = "Ngọa hổ tàng long, lão ma ngày đêm rình rập đoạt xá: Đạo Tâm -15, Sát Khí +30; Nếu Đan Độc vượt quá 50% sẽ lập tức bị lão ma cưỡng ép khởi động Đoạt Xá!",
+                costCongDuc = 95,
+                pointCost = 2,
+                thanThucMod = 30,
+                ngoTinhMod = 25,
+                daoTamMod = -15,
                 satKhiMod = 30
             ),
+            DestinyTrait(
+                id = "t_hung_thu_huyet_mach",
+                name = "Thái Cổ Hung Thú Huyết Mạch",
+                tier = "Sử Thi",
+                boonDesc = "Kế thừa huyết thống Thao Thiết/Chân Long: Căn Cốt +35, Thọ Nguyên +20, nạp đan dược hấp thu x2 Linh Khí, bạo phát cuồng bạo khi nguy kịch.",
+                curseDesc = "Hung tính khó thuần: Mỗi 10 năm phát tác Cuồng Huyết Nhập Não một lần (bắt buộc phải sát sinh hoặc tự cắn xé kinh mạch tổn thọ 5 năm), Ẩn Nhẫn Trị -20, Sát Khí +35.",
+                costCongDuc = 90,
+                pointCost = 2,
+                canCotMod = 35,
+                lifespanMod = 20,
+                satKhiMod = 35,
+                anNhanTriMod = -20
+            ),
 
-            // -------------------------------------------------------------
-            // TIER 2: TAI HỌA (pointCost = -3, Cân bằng điểm số mệnh)
-            // -------------------------------------------------------------
+            // =============================================================
+            // 3. HIẾM (pointCost = +1, Chi phí Công Đức dương: 65 - 70)
+            // =============================================================
+            DestinyTrait(
+                id = "t_di_chung_kiem_cot",
+                name = "Dị Chủng Kiếm Cốt",
+                tier = "Hiếm",
+                boonDesc = "Xương tủy tiên thiên kiếm thai: Sát thương kiếm thuật +80%, Ngộ Tính +20, Căn Cốt +15, lĩnh ngộ kiếm đạo cực nhanh.",
+                curseDesc = "Kiếm sát bén nhọn rạch xé kinh mạch mỗi khi vận công: Khí tức lộ liễu khiến nguy cơ bị kẻ thù phục kích tăng 25%, Sát Khí +15.",
+                costCongDuc = 70,
+                pointCost = 1,
+                ngoTinhMod = 20,
+                canCotMod = 15,
+                satKhiMod = 15
+            ),
+            DestinyTrait(
+                id = "t_chan_duong_hoa_mach",
+                name = "Chân Dương Hỏa Mạch",
+                tier = "Hiếm",
+                boonDesc = "Chân hỏa rực cháy kinh lạc: Kháng 70% Hỏa Độc, luyện đan tỉ lệ cực phẩm tăng 40%, Căn Cốt +15, Linh Khí ban đầu +100.",
+                curseDesc = "Hỏa độc thiêu đốt tâm can: Tánh khí nóng nảy bức bách, Đạo Tâm -10; Nếu không tìm được linh dược âm hàn trước 50 tuổi sẽ tự thiêu đốt ngũ tạng (Thọ Nguyên -10).",
+                costCongDuc = 65,
+                pointCost = 1,
+                canCotMod = 15,
+                daoTamMod = -10,
+                lifespanMod = -10
+            ),
+
+            // =============================================================
+            // 4. PHÀM PHẨM / NGUYỄN RỦA (pointCost = -3, Hoàn trả điểm số mệnh âm)
+            // =============================================================
             DestinyTrait(
                 id = "t_gia_toc_diet",
-                name = "Gia Tộc Diệt Môn",
+                name = "Gia Tộc Bị Diệt (Huyết Oán)",
                 tier = "Tai Họa",
-                boonDesc = "Nung nấu ý chí báo thù: Động lực sinh tồn giúp tăng 20 điểm Ẩn Nhẫn Trị.",
-                curseDesc = "Huyết hải thâm thù: +45 điểm Sát Khí/Nghiệp Lực, Đạo Tâm -15.",
+                boonDesc = "Biến số đốn ngộ: Kích phát ý chí sinh tồn tột cùng, Ẩn Nhẫn Trị +35; Khi HP dưới 20% tỉ lệ đốn ngộ đột phá sinh tử tăng 30%.",
+                curseDesc = "Huyết hải thâm thù: Toàn gia bị tru diệt, trên trán khắc Huyết Oán Nguyền, gánh chịu +50 Sát Khí/Nghiệp Lực, Đạo Tâm -20, định kỳ bị ma tu truy sát!",
                 costCongDuc = 0,
                 pointCost = -3,
                 isCalamity = true,
-                anNhanTriMod = 20,
-                satKhiMod = 45,
-                daoTamMod = -15
+                anNhanTriMod = 35,
+                satKhiMod = 50,
+                daoTamMod = -20
             ),
             DestinyTrait(
                 id = "t_doan_menh",
-                name = "Đoản Mệnh Thiên Kiếp",
+                name = "Cửu Âm Đoản Mệnh (Tuyệt Mạch)",
                 tier = "Tai Họa",
-                boonDesc = "Phá kén cấp bách: Tốc độ hấp thu linh khí trong 30 năm đầu tăng 20%.",
-                curseDesc = "Mệnh bạc như tờ: Thọ Nguyên cực hạn giảm vĩnh viễn 30 năm.",
+                boonDesc = "Biến số đốn ngộ: Thời gian cạn kiệt ép buộc nghịch mệnh; Tốc độ hấp thu linh khí trong 40 năm đầu x1.5, Ngộ Tính tuyệt cảnh +25.",
+                curseDesc = "Mệnh bạc như tờ: Thọ Nguyên cực hạn bị chém đứt vĩnh viễn 35 năm (chỉ sống tối đa 65 tuổi ở Luyện Khí Kỳ), Căn Cốt -20 điểm.",
                 costCongDuc = 0,
                 pointCost = -3,
                 isCalamity = true,
-                lifespanMod = -30
-            ),
-            DestinyTrait(
-                id = "t_phe_mach",
-                name = "Phế Mạch Trầm Kha",
-                tier = "Tai Họa",
-                boonDesc = "Gian nan rèn tâm: Nhờ chịu khổ cực từ nhỏ mà Đạo Tâm tăng +10.",
-                curseDesc = "Kinh mạch tắc nghẽn: Căn Cốt -25 điểm, Lôi Kiếp đợt đầu sát thương tăng.",
-                costCongDuc = 0,
-                pointCost = -3,
-                isCalamity = true,
-                canCotMod = -25,
-                daoTamMod = 10
-            ),
-            DestinyTrait(
-                id = "t_tam_ma_am_anh",
-                name = "Tâm Ma Ám Ảnh",
-                tier = "Tai Họa",
-                boonDesc = "Ngộ đạo cực đoan: Tăng 10 điểm Ngộ Tính khi nghiên cứu cấm thuật.",
-                curseDesc = "Vực sâu tâm ma: Đạo Tâm giảm 25 điểm, sát khí +15.",
-                costCongDuc = 0,
-                pointCost = -3,
-                isCalamity = true,
-                ngoTinhMod = 10,
-                daoTamMod = -25,
-                satKhiMod = 15
+                lifespanMod = -35,
+                canCotMod = -20,
+                ngoTinhMod = 25
             ),
             DestinyTrait(
                 id = "t_thien_sat_co_tinh",
@@ -391,6 +415,122 @@ object GameContentRegistry {
                 description = "Nghịch chuyển âm dương, giảm 50 Sát Khí, tăng 30 năm thọ nguyên cực hạn.",
                 count = 1,
                 sellPrice = 500L
+            )
+        )
+    }
+
+    /**
+     * KHO SỰ KIỆN TU TIÊN HẮC ÁM (DARK CULTIVATION EVENTS)
+     * Thiết kế theo 3 con đường sinh tồn:
+     * - [Cẩu Đạo]: An toàn, chịu thiệt thòi tài vật nhưng giữ mạng.
+     * - [Tranh Đoạt]: Liều mạng cướp tạo hóa, sinh tử nhất tuyến (High risk - High reward).
+     * - [Ẩn Nhẫn / Tà Đạo]: Dùng mưu kế, đánh lén, hiến tế, ma đạo mưu mô.
+     */
+    object DarkEvents {
+        val ALL: List<DarkCultivationEvent> = listOf(
+            DarkCultivationEvent(
+                id = "evt_doat_xa_thi_lac_coc",
+                title = "Tàn Hồn Đoạt Xá Tại Thi Lạc Cốc",
+                narrative = "Bên trong hang đá âm u ngập tràn mùi thối rữa của tử thi, một bộ bạch cốt bỗng bốc lên u hỏa xanh biếc. Tàn hồn một lão quái Trúc Cơ kỳ chậm rãi bay ra, âm lãnh khóa chặt lấy mi tâm ngươi: 'Tiểu bối nhục thân không tệ, dâng hiến thể xác cho lão phu, lão phu ban cho ngươi đại đạo tiền trình!'",
+                cauDao = DarkEventChoice(
+                    path = ChoicePath.CAU_DAO,
+                    label = "[Cẩu Đạo] Dập đầu tha mạng, ném Túi Trữ Vật rồi độn thổ đào tẩu",
+                    actionText = "Thu liễm khí tức, vứt bỏ toàn bộ tài vật vắt chân lên cổ chạy trối chết!",
+                    outcomeNarrative = "Ngươi mất sạch tài vật tích góp, kinh mạch rạn nứt tổn thọ 2 năm, nhưng bảo toàn được tính mạng nguyên vẹn trước nanh vuốt lão quái.",
+                    effects = EventStatsEffect(lifespan = -2, qi = -20, pillToxin = 0, karma = -5, divineSense = 10)
+                ),
+                tranhDoat = DarkEventChoice(
+                    path = ChoicePath.TRANH_DOAT,
+                    label = "[Tranh Đoạt] Dốc cạn đan điền, kích phát toàn bộ Phù Lục liều chết một trận",
+                    actionText = "Gầm lên giận dữ, rút Linh Kiếm kích phát Tam Muội Chân Hỏa quyết tử chiến!",
+                    outcomeNarrative = "Ngươi bị ma khí đánh nát kinh mạch thổ huyết liên tục, nhưng may mắn kích sát được tàn hồn, đoạt được Trúc Cơ Tàn Đan cùng ký ức công pháp thượng cổ!",
+                    effects = EventStatsEffect(lifespan = -5, qi = 350, pillToxin = 15, karma = 30, divineSense = 25)
+                ),
+                anNhanTaDao = DarkEventChoice(
+                    path = ChoicePath.AN_NHAN_TA_DAO,
+                    label = "[Ẩn Nhẫn / Tà Đạo] Giả vờ mở thức hải, ngậm sẵn Độc Đan dẫn dụ lão ma nuốt chửng",
+                    actionText = "Quỳ gối xưng thần, ngậm Hủ Cốt Tán chờ lão ma xông vào thức hải liền dẫn bạo tương tàn!",
+                    outcomeNarrative = "Lão quái trúng kế bị độc khí ăn mòn thảm thiết. Ngươi cắn răng nuốt chửng tàn hồn ngược lại, thần thức bạo tăng, nhưng sát khí và đan độc nhập cốt tủy.",
+                    effects = EventStatsEffect(lifespan = -3, qi = 180, pillToxin = 35, karma = 45, divineSense = 50)
+                )
+            ),
+            DarkCultivationEvent(
+                id = "evt_tranh_doat_huyet_tinh_chi",
+                title = "Huyết Đầm Tranh Đoạt Huyết Tinh Chi",
+                narrative = "Giữa đầm lầy tanh tưởi, một gốc Huyết Tinh Chi ngàn năm đỏ rực như máu đang tỏa hương thơm ngát. Xác chết chục tu sĩ vương vãi, một con Nhị Giai Xích Lân Mãng cuộn tròn say ngủ.",
+                cauDao = DarkEventChoice(
+                    path = ChoicePath.CAU_DAO,
+                    label = "[Cẩu Đạo] Ẩn nấp trong bùn lầy nửa tháng, chỉ nhặt rác túi trữ vật rồi lặng lẽ rút",
+                    actionText = "Nuốt Bế Khí Đan, vùi mình sâu trong hố bùn kiên nhẫn chờ thời cơ an toàn.",
+                    outcomeNarrative = "Chờ mãng xà bỏ đi, ngươi rón rén gom vét 3 chiếc túi trữ vật vô chủ rồi lùi bước an toàn, tâm cảnh cẩn trọng vững như bàn thạch.",
+                    effects = EventStatsEffect(lifespan = 0, qi = 40, pillToxin = -5, karma = 0, divineSense = 15)
+                ),
+                tranhDoat = DarkEventChoice(
+                    path = ChoicePath.TRANH_DOAT,
+                    label = "[Tranh Đoạt] Phục kích bạo khởi, chém đầu yêu mãng đoạt Huyết Tinh Chi ngàn năm",
+                    actionText = "Bày trận pháp, dẫn bạo 10 lá Hỏa Cầu Phù thiêu cháy hốc mắt cự thú, lao vào cận chiến!",
+                    outcomeNarrative = "Ngươi chém đứt đầu mãng xà, ngực gãy 3 dẻ sườn. Nuốt tươi Huyết Tinh Chi, linh khí cuồn cuộn phá tan bình cảnh, thọ nguyên tăng vọt!",
+                    effects = EventStatsEffect(lifespan = 15, qi = 600, pillToxin = 20, karma = 40, divineSense = 10)
+                ),
+                anNhanTaDao = DarkEventChoice(
+                    path = ChoicePath.AN_NHAN_TA_DAO,
+                    label = "[Ẩn Nhẫn / Tà Đạo] Đánh mê đồng môn ném vào miệng mãng xà, nhân lúc nó ăn mồi ra tay",
+                    actionText = "Mặt không đổi sắc hạ độc đồng môn làm mồi nhử, bản thân lẻn hái trộm linh dược rồi phóng hỏa thiêu rụi dấu vết.",
+                    outcomeNarrative = "Đồng môn thê thảm trong bụng rắn. Ngươi hái trọn linh dược trốn thoát êm thấm. Lòng dạ tàn nhẫn như sói dữ, không tốn chút sức lực đoạt đại tạo hóa!",
+                    effects = EventStatsEffect(lifespan = 20, qi = 500, pillToxin = 0, karma = 65, divineSense = 20)
+                )
+            ),
+            DarkCultivationEvent(
+                id = "evt_tong_mon_huyet_te",
+                title = "Tông Môn Huyết Tế Ma Trận",
+                narrative = "Tông môn bị Vạn Ma Tông vây hãm. Chưởng Môn mắt đỏ ngầu triệu tập đệ tử: 'Đại trận sắp vỡ, bản tọa cần tinh huyết của chư vị hiến tế Hộ Tông Ma Đỉnh!'",
+                cauDao = DarkEventChoice(
+                    path = ChoicePath.CAU_DAO,
+                    label = "[Cẩu Đạo] Đã đào sẵn đường hầm bí mật từ 5 năm trước, lập tức cải trang đào tẩu",
+                    actionText = "Kích hoạt trận bàn tàng hình đã giấu từ lâu, không ngoảnh đầu nhìn lại sư môn.",
+                    outcomeNarrative = "Ngươi bỏ trốn thành công. Sư môn sau đó bị đồ sát sạch sẽ. Ngươi sống sót biến thành tán tu phiêu bạt, thấu hiểu quy tắc sinh tồn máu lạnh.",
+                    effects = EventStatsEffect(lifespan = 0, qi = -50, pillToxin = 0, karma = 10, divineSense = 20)
+                ),
+                tranhDoat = DarkEventChoice(
+                    path = ChoicePath.TRANH_DOAT,
+                    label = "[Tranh Đoạt] Cùng đồng môn xông lên tuyến đầu huyết chiến cản phá ma tu",
+                    actionText = "Rút bổn mạng pháp bảo, dẫn đầu chiến đội đệ tử xông thẳng vào vạn ma sát trận quyết tử!",
+                    outcomeNarrative = "Ngươi chém giết 5 ma tu cùng cấp, trọng thương suýt chết nhưng được thái thượng trưởng lão truyền công ban thưởng Huyết Linh Đan phá cảnh!",
+                    effects = EventStatsEffect(lifespan = -10, qi = 900, pillToxin = 25, karma = 50, divineSense = 35)
+                ),
+                anNhanTaDao = DarkEventChoice(
+                    path = ChoicePath.AN_NHAN_TA_DAO,
+                    label = "[Ẩn Nhẫn / Tà Đạo] Đánh lén Chưởng Môn từ sau lưng, dâng đầu lâu Chưởng Môn hàng Ma Tông",
+                    actionText = "Phóng Độc Hồn Châm đâm thủng đan điền Chưởng Môn, chặt đầu dâng nạp mở toang trận môn nghênh đón ma đầu.",
+                    outcomeNarrative = "Ma Tông Ma Đầu cười vang tán thưởng lòng dạ độc ác, phong ngươi làm Đường Chủ Ma Môn, ban thưởng Ma Đạo Tâm Pháp. Đạo tâm vỡ vụn biến thành Ma Đầu chân chính!",
+                    effects = EventStatsEffect(lifespan = 30, qi = 1200, pillToxin = 40, karma = 90, divineSense = 40)
+                )
+            ),
+            DarkCultivationEvent(
+                id = "evt_song_tu_lo_dinh",
+                title = "Bẫy Ngọt Ngào: Mỹ Nhân Song Tu Hay Độc Lô Đỉnh?",
+                narrative = "Một vị Dao Trì Tiên Tử tuyệt sắc chủ động ngỏ lời mời ngươi cùng bế quan song tu tại Đào Hoa Động. Thần thức nhạy bén phát hiện trong hương phấn có pha lẫn 'Toái Hồn Tán' biến ngươi thành hình nhân Lô Đỉnh hút cạn tu vi.",
+                cauDao = DarkEventChoice(
+                    path = ChoicePath.CAU_DAO,
+                    label = "[Cẩu Đạo] Giả vờ đau bụng thổ tả vì tẩu hỏa nhập ma, suốt đêm dọn nhà đào tẩu ngàn dặm",
+                    actionText = "Miệng phun bọt mép giả điên giả dại xin lỗi tiên tử rồi dọn sạch động phủ đào tẩu.",
+                    outcomeNarrative = "Nữ tu tức giận nhưng không thể làm gì. Ngươi bảo toàn được nguyên dương tinh thuần, tuy mất mặt nhưng giữ trọn cái mạng nhỏ sống lâu.",
+                    effects = EventStatsEffect(lifespan = 0, qi = 0, pillToxin = 0, karma = -5, divineSense = 15)
+                ),
+                tranhDoat = DarkEventChoice(
+                    path = ChoicePath.TRANH_DOAT,
+                    label = "[Tranh Đoạt] Tương kế tựu kế, vào phòng liền kích hoạt Kiếm Trận chém chết độc phụ",
+                    actionText = "Vừa bước vào phòng hoa liền phóng ra 36 thanh Thanh Trúc Kiếm bao vây kết liễu nữ tu!",
+                    outcomeNarrative = "Nữ tu bị kiếm trận băm thành từng mảnh. Ngươi đoạt được Túi Trữ Vật chứa đầy cực phẩm đan dược và linh thạch, nhưng bị Dao Trì phát lệnh truy nã toàn cảnh.",
+                    effects = EventStatsEffect(lifespan = -5, qi = 1200, pillToxin = 10, karma = 50, divineSense = 40)
+                ),
+                anNhanTaDao = DarkEventChoice(
+                    path = ChoicePath.AN_NHAN_TA_DAO,
+                    label = "[Ẩn Nhẫn / Tà Đạo] Uống trước Nghịch Huyết Đan, lúc song tu đảo ngược trận pháp biến nàng thành Lô Đỉnh",
+                    actionText = "Hùa theo cuộc vui, chờ thời khắc âm dương giao hòa then chốt liền cưỡng ép hút sạch linh âm nguyên khí của nàng!",
+                    outcomeNarrative = "Nữ tu dung nhan héo rũ, tu vi Kim Đan bị ngươi hút cạn biến thành phàm nhân già nua. Tu vi ngươi bạo trướng chạm ngưỡng Nguyên Anh Kỳ, nhưng sát khí dày đặc như mây đen!",
+                    effects = EventStatsEffect(lifespan = 50, qi = 3000, pillToxin = 20, karma = 85, divineSense = 70)
+                )
             )
         )
     }

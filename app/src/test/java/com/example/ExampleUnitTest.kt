@@ -295,4 +295,66 @@ class ExampleUnitTest {
         // Qi x2 multiplier: 100 * 2 = 200L
         assertEquals(200L, stats.maxQi)
     }
+
+    @Test
+    fun testDarkCultivationEvent_ResolveChoicesEffectOnPlayerStats() {
+        val engine = com.example.engine.GameEngineCore()
+        val event = com.example.content.GameContentRegistry.DarkEvents.ALL.first { it.id == "evt_doat_xa_thi_lac_coc" }
+
+        // Kích hoạt sự kiện Đoạt Xá
+        engine.triggerDarkEvent(event)
+        val stateWithEvent = engine.currentState()
+        assertNotNull(stateWithEvent.activeDarkEvent)
+        assertEquals("evt_doat_xa_thi_lac_coc", stateWithEvent.activeDarkEvent!!.id)
+
+        // 1. Kiểm tra lựa chọn [Tranh Đoạt]: Liều mạng tử chiến
+        val initialQi = stateWithEvent.qi
+        val initialSatKhi = stateWithEvent.satKhi
+        val initialThanThuc = stateWithEvent.thanThuc
+
+        engine.resolveDarkEventChoice(com.example.model.ChoicePath.TRANH_DOAT)
+        val stateAfterTranhDoat = engine.currentState()
+
+        assertNull("Event phải được đóng sau khi giải quyết", stateAfterTranhDoat.activeDarkEvent)
+        assertNotNull("Phải có narrative kết quả", stateAfterTranhDoat.darkEventResultNarrative)
+        // Tranh đoạt: qi tăng +350, sát khí tăng +30, thần thức tăng +25
+        assertTrue(stateAfterTranhDoat.qi > initialQi)
+        assertTrue(stateAfterTranhDoat.satKhi > initialSatKhi)
+        assertTrue(stateAfterTranhDoat.thanThuc > initialThanThuc)
+    }
+
+    @Test
+    fun testDarkCultivationEvent_CauDaoChoice_SafeOutcome() {
+        val engine = com.example.engine.GameEngineCore()
+        val event = com.example.content.GameContentRegistry.DarkEvents.ALL.first { it.id == "evt_tranh_doat_huyet_tinh_chi" }
+
+        engine.triggerDarkEvent(event)
+        val initialSatKhi = engine.currentState().satKhi
+
+        // Chọn [Cẩu Đạo]: Nấp trong bùn lầy, an toàn giữ mạng
+        engine.resolveDarkEventChoice(com.example.model.ChoicePath.CAU_DAO)
+        val finalState = engine.currentState()
+
+        assertNull(finalState.activeDarkEvent)
+        // Cẩu đạo không tạo sát khí thù hận
+        assertEquals(initialSatKhi, finalState.satKhi)
+    }
+
+    @Test
+    fun testDarkCultivationEvent_AnNhanTaDaoChoice_ExtremeKarmaAndInsight() {
+        val engine = com.example.engine.GameEngineCore()
+        val event = com.example.content.GameContentRegistry.DarkEvents.ALL.first { it.id == "evt_tong_mon_huyet_te" }
+
+        engine.triggerDarkEvent(event)
+        val initialSatKhi = engine.currentState().satKhi
+
+        // Chọn [Ẩn Nhẫn / Tà Đạo]: Đánh lén chưởng môn dâng đầu hàng ma tông
+        engine.resolveDarkEventChoice(com.example.model.ChoicePath.AN_NHAN_TA_DAO)
+        val finalState = engine.currentState()
+
+        assertNull(finalState.activeDarkEvent)
+        // Tà đạo: Sát khí nghiệp lực tăng vọt cực lớn (+90)
+        assertTrue("Sát khí tà đạo phải tăng mạnh", finalState.satKhi >= initialSatKhi + 80)
+        assertTrue(finalState.darkEventResultNarrative!!.contains("Ma Đầu"))
+    }
 }

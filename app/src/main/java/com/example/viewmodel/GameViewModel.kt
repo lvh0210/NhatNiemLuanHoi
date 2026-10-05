@@ -72,6 +72,8 @@ data class GameUiState(
     val logs: List<GameLogEntry> = emptyList(),
     val pastLives: List<PastLifeRecord> = emptyList(),
     val currentDivination: DivinationEvent? = null,
+    val activeDarkEvent: DarkCultivationEvent? = null,
+    val darkEventResultNarrative: String? = null,
     val tribulation: TribulationState = TribulationState(),
     val soulClash: SoulClashState = SoulClashState(),
     val showLuanHoiDialog: Boolean = false,
@@ -381,5 +383,17 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getAvailableDestinyTraits(): List<DestinyTrait> {
         return gameEngine.getAllAvailableTraits()
+    }
+
+    fun triggerDarkEvent() {
+        gameEngine.triggerDarkEvent()
+    }
+
+    fun resolveDarkEventChoice(choicePath: ChoicePath) {
+        gameEngine.resolveDarkEventChoice(choicePath)
+    }
+
+    fun dismissDarkEvent() {
+        gameEngine.dismissDarkEvent()
     }
 }

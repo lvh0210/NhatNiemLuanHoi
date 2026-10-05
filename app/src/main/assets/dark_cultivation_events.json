@@ -1,0 +1,242 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DarkCultivationEventCollection",
+  "description": "Kho sự kiện tu tiên Roguelite hắc ám - Phong cách Cổ Chân Nhân, Phàm Nhân Tu Tiên, Nhất Niệm Vĩnh Hằng",
+  "events": [
+    {
+      "id": "evt_doat_xa_thi_lac_coc",
+      "title": "Tàn Hồn Đoạt Xá Tại Thi Lạc Cốc",
+      "minRealm": "LUYEN_KHI",
+      "narrative": "Bên trong hang đá âm u ngập tràn mùi thối rữa của tử thi, một bộ bạch cốt bỗng bốc lên u hỏa xanh biếc. Tàn hồn một lão quái Trúc Cơ kỳ chậm rãi bay ra, âm lãnh khóa chặt lấy mi tâm ngươi: 'Tiểu bối nhục thân không tệ, dâng hiến thể xác cho lão phu, lão phu ban cho ngươi đại đạo tiền trình!'",
+      "choices": {
+        "cauDao": {
+          "path": "CAU_DAO",
+          "label": "[Cẩu Đạo] Dập đầu cầu tha mạng, ném Túi Trữ Vật đánh lạc hướng rồi thi triển Thổ Độn phù đào tẩu",
+          "actionText": "Thu liễm toàn bộ khí tức, không màng sĩ diện, quay đầu vắt chân lên cổ mà chạy trối chết!",
+          "outcomeNarrative": "Ngươi mất sạch toàn bộ tài vật tích góp bấy lâu, kinh mạch do cưỡng ép độn thổ mà rạn nứt tổn thọ 2 năm, nhưng bảo toàn được tính mạng nguyên vẹn trước nanh vuốt lão quái.",
+          "effects": {
+            "lifespan": -2,
+            "qi": -20,
+            "pillToxin": 0,
+            "karma": -5,
+            "divineSense": 10
+          }
+        },
+        "tranhDoat": {
+          "path": "TRANH_DOAT",
+          "label": "[Tranh Đoạt] Dốc cạn đan điền, vận khởi toàn bộ Phù Lục & Sát Chiêu liều mạng tiêu diệt tàn hồn",
+          "actionText": "Gầm lên giận dữ, rút Linh Kiếm kích phát Tam Muội Chân Hỏa quyết tử chiến một trận!",
+          "outcomeNarrative": "Trận chiến thảm liệt nổ ra. Ngươi bị ma khí đánh nát kinh mạch, thổ huyết liên tục nhưng may mắn kích sát được tàn hồn, đoạt được Trúc Cơ Tàn Đan cùng ký ức công pháp thượng cổ của hắn!",
+          "effects": {
+            "lifespan": -5,
+            "qi": 350,
+            "pillToxin": 15,
+            "karma": 30,
+            "divineSense": 25
+          }
+        },
+        "anNhanTaDao": {
+          "path": "AN_NHAN_TA_DAO",
+          "label": "[Ẩn Nhẫn / Tà Đạo] Giả vờ thuận phục mở thức hải, ngấm ngầm nuốt Độc Đan dẫn dụ lão ma nuốt chửng",
+          "actionText": "Tỏ vẻ sợ hãi quỳ gối xưng thần, nhưng trong miệng ngậm sẵn Hủ Cốt Tán, chờ lão quái xông vào thức hải liền dẫn bạo hồn phách tương tàn!",
+          "outcomeNarrative": "Lão quái trúng kế đoạt xá, bị độc khí ăn mòn hồn thể hét lên thảm thiết rồi tan biến. Ngươi cắn răng nuốt chửng tàn hồn ngược lại, thần thức bạo tăng, nhưng sát khí và đan độc nhập cốt tủy.",
+          "effects": {
+            "lifespan": -3,
+            "qi": 180,
+            "pillToxin": 35,
+            "karma": 45,
+            "divineSense": 50
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_tranh_doat_huyet_tinh_chi",
+      "title": "Huyết Đầm Tranh Đoạt Huyết Tinh Chi",
+      "minRealm": "LUYEN_KHI",
+      "narrative": "Giữa đầm lầy tanh tưởi, một gốc Huyết Tinh Chi ngàn năm đỏ rực như máu đang tỏa hương thơm ngát. Xung quanh có xác chết của hơn chục tu sĩ tán tu bị xé rách vụn, một con Nhị Giai Xích Lân Mãng đang cuộn tròn say ngủ, khí tức tương đương Trúc Cơ sơ kỳ.",
+      "choices": {
+        "cauDao": {
+          "path": "CAU_DAO",
+          "label": "[Cẩu Đạo] Ẩn nấp trong bùn lầy ròng rã nửa tháng, chỉ nhặt rác túi trữ vật của kẻ chết rồi lặng lẽ rút lui",
+          "actionText": "Nuốt Bế Khí Đan, vùi mình sâu trong hố bùn không nhúc nhích, nhịn đói nhịn khát kiên nhẫn chờ thời cơ an toàn.",
+          "outcomeNarrative": "Ngươi không dám chạm vào gốc Huyết Tinh Chi. Chờ khi cự mãng bỏ đi săn mồi, ngươi rón rén gom vét 3 chiếc túi trữ vật vô chủ rồi lùi bước an toàn, tâm cảnh cẩn trọng vững như bàn thạch.",
+          "effects": {
+            "lifespan": 0,
+            "qi": 40,
+            "pillToxin": -5,
+            "karma": 0,
+            "divineSense": 15
+          }
+        },
+        "tranhDoat": {
+          "path": "TRANH_DOAT",
+          "label": "[Tranh Đoạt] Phục kích bạo khởi, chém đầu yêu mãng đoạt trọn vẹn Huyết Tinh Chi ngàn năm",
+          "actionText": "Bày Thiên La Địa Võng trận, dẫn bạo 10 lá Hỏa Cầu Phù thiêu cháy hốc mắt cự thú, lao vào cận chiến sinh tử!",
+          "outcomeNarrative": "Một trận huyết chiến kinh thiên động địa. Ngươi chém đứt đầu mãng xà, ngực bị đuôi quất gãy 3 dẻ xương sườn. Nuốt tươi Huyết Tinh Chi, linh khí cuồn cuộn phá tan bình cảnh, thọ nguyên tăng vọt!",
+          "effects": {
+            "lifespan": 15,
+            "qi": 600,
+            "pillToxin": 20,
+            "karma": 40,
+            "divineSense": 10
+          }
+        },
+        "anNhanTaDao": {
+          "path": "AN_NHAN_TA_DAO",
+          "label": "[Ẩn Nhẫn / Tà Đạo] Đánh thuốc mê đồng môn đi ngang qua ném vào miệng mãng xà, nhân lúc nó nuốt mồi ra tay đoạt bảo",
+          "actionText": "Mặt không đổi sắc hạ độc dẫn dụ một nhóm đồng môn đệ tử làm mồi nhử cho mãng xà xâu xé, bản thân lẻn ra phía sau hái trộm linh dược rồi phóng hỏa thiêu rụi dấu vết.",
+          "outcomeNarrative": "Đồng môn gào thét thảm thiết trong bụng mãng xà. Ngươi hái trọn linh dược trốn thoát êm thấm. Lòng dạ tàn nhẫn như sói dữ, không tốn chút sức lực đoạt đại tạo hóa, nhưng nghiệp chướng ngút trời!",
+          "effects": {
+            "lifespan": 20,
+            "qi": 500,
+            "pillToxin": 0,
+            "karma": 65,
+            "divineSense": 20
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_tong_mon_huyet_te",
+      "title": "Ma Khiếp Tông Môn Huyết Tế Trận",
+      "minRealm": "TRUC_CO",
+      "narrative": "Tông môn bị cường địch Vạn Ma Quỷ Tông vây hãm mười ngày mười đêm. Sơn môn sắp vỡ, Chưởng Môn Chân Nhân triệu tập toàn bộ đệ tử nội môn vào cấm địa, ánh mắt đỏ ngầu lộ vẻ điên cuồng: 'Đại trận sắp sụp đổ, bản tọa cần tinh huyết của chư vị hiến tế Hộ Tông Ma Đỉnh để kích sát ma đầu!'",
+      "choices": {
+        "cauDao": {
+          "path": "CAU_DAO",
+          "label": "[Cẩu Đạo] Đã sớm chuẩn bị đường hầm bí mật từ 5 năm trước, lập tức phản tông cải trang đào tẩu",
+          "actionText": "Lợi dụng lúc hỗn loạn kích hoạt trận bàn tàng hình đã cất giấu từ lâu, không ngoảnh đầu nhìn lại sư môn.",
+          "outcomeNarrative": "Ngươi bỏ trốn thành công trước khi cấm địa bị phong tỏa. Sư môn sau đó bị đồ sát sạch sẽ không còn một mống. Ngươi sống sót biến thành tán tu phiêu bạt, thấu hiểu quy tắc sinh tồn máu lạnh của tu chân giới.",
+          "effects": {
+            "lifespan": 0,
+            "qi": -50,
+            "pillToxin": 0,
+            "karma": 10,
+            "divineSense": 20
+          }
+        },
+        "tranhDoat": {
+          "path": "TRANH_DOAT",
+          "label": "[Tranh Đoạt] Cùng đồng môn xông lên tuyến đầu huyết chiến cản phá ma tu, liều mạng bảo vệ sơn môn",
+          "actionText": "Rút bổn mạng pháp bảo, dẫn đầu chiến đội đệ tử xông thẳng vào vạn ma sát trận quyết chiến tử thủ!",
+          "outcomeNarrative": "Trận chiến đẫm máu. Ngươi chém giết 5 ma tu cùng cấp, trọng thương suýt chết nhưng được thái thượng trưởng lão truyền công cứu mạng, ban thưởng Huyết Linh Đan phá cảnh!",
+          "effects": {
+            "lifespan": -10,
+            "qi": 900,
+            "pillToxin": 25,
+            "karma": 50,
+            "divineSense": 35
+          }
+        },
+        "anNhanTaDao": {
+          "path": "AN_NHAN_TA_DAO",
+          "label": "[Ẩn Nhẫn / Tà Đạo] Đánh lén Chưởng Môn từ sau lưng, dâng nạp đầu lâu Chưởng Môn xin quy thuận Ma Tông",
+          "actionText": "Nhân lúc Chưởng Môn đang vận chuyển ma đỉnh suy yếu, phóng Độc Hồn Châm đâm thẳng đan điền, chặt đầu lão rồi mở toang trận môn nghênh đón ma đầu.",
+          "outcomeNarrative": "Ma Tông Ma Đầu cười vang tán thưởng lòng dạ độc ác của ngươi, phong ngươi làm Đường Chủ Ma Môn, ban thưởng Ma Đạo Tâm Pháp tột đỉnh. Đạo tâm vỡ vụn biến thành Ma Đầu chân chính!",
+          "effects": {
+            "lifespan": 30,
+            "qi": 1200,
+            "pillToxin": 40,
+            "karma": 90,
+            "divineSense": 40
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_co_ma_di_cot",
+      "title": "Ma Thần Di Cốt Dưới Vực Tuyệt Tình",
+      "minRealm": "TRUC_CO",
+      "narrative": "Bị kẻ thù truy sát rơi xuống đáy Vực Tuyệt Tình quanh năm mây mù che phủ. Dưới đáy vực là một bộ hài cốt khổng lồ cao mười trượng, bị chín sợi xích thần bằng Cửu U Minh Thiết xuyên qua xương tủy. Hài cốt phát ra âm thanh âm u: 'Hậu bối... rút cho ta một sợi xích, ta truyền cho ngươi Thôn Thiên Ma Công cùng một giọt Chân Ma Chi Huyết!'",
+      "choices": {
+        "cauDao": {
+          "path": "CAU_DAO",
+          "label": "[Cẩu Đạo] Tuyệt đối không giao dịch với ma quỷ, tự bẻ gãy kinh mạch leo vách đá bò lên từng chút một",
+          "actionText": "Bịt tai làm ngơ, không nghe lời dụ hoặc ma âm, chịu đau đớn gãy xương dùng móng tay bám đá trèo lên.",
+          "outcomeNarrative": "Ngươi mất trọn vẹn 3 năm ròng rã bò lên khỏi vực thẳm. Ý chí sắt đá được tôi luyện tột đỉnh, Đạo Tâm kiên định bất hoại, không nhiễm mảy may ma niệm.",
+          "effects": {
+            "lifespan": -3,
+            "qi": 100,
+            "pillToxin": -10,
+            "karma": 0,
+            "divineSense": 30
+          }
+        },
+        "tranhDoat": {
+          "path": "TRANH_DOAT",
+          "label": "[Tranh Đoạt] Nhận Chân Ma Chi Huyết, rút kiếm chém đứt 1 sợi xích rồi cướp luôn Ma Giới Chỉ trên tay hài cốt",
+          "actionText": "Vừa nhổ xích giải phong vừa xuất kỳ bất ý dùng Lôi Đình Phù nện thẳng vào hộp sọ cổ ma cướp đoạt nhẫn trữ vật!",
+          "outcomeNarrative": "Cổ ma gào thét giận dữ vì bị tiểu bối lừa gạt, chưởng lực tàn dư đánh ngươi nát một cánh tay. Ngươi nuốt giọt Chân Ma Huyết, nhục thân lột xác như thần ma, cầm theo nhẫn cổ ma tẩu thoát!",
+          "effects": {
+            "lifespan": 25,
+            "qi": 1500,
+            "pillToxin": 30,
+            "karma": 60,
+            "divineSense": 35
+          }
+        },
+        "anNhanTaDao": {
+          "path": "AN_NHAN_TA_DAO",
+          "label": "[Ẩn Nhẫn / Tà Đạo] Chặt đứt cánh tay trái làm vật tế bái Cổ Ma làm thầy, tu luyện hoàn chỉnh Thôn Thiên Quyết",
+          "actionText": "Quỳ gối dâng máu tươi huyết tế, thề độc trọn đời phụng sự ma đạo để đổi lấy chân truyền tối thượng.",
+          "outcomeNarrative": "Cánh tay hóa thành tro bụi, ma văn bò kín toàn thân. Cổ ma ban cho ngươi lực lượng vô biên, thọ mệnh tăng vọt trăm năm, nhưng toàn thân biến thành nửa người nửa ma, thiên hạ chính đạo đều muốn tiêu diệt!",
+          "effects": {
+            "lifespan": 100,
+            "qi": 2500,
+            "pillToxin": 60,
+            "karma": 100,
+            "divineSense": 60
+          }
+        }
+      }
+    },
+    {
+      "id": "evt_song_tu_lo_dinh",
+      "title": "Bẫy Ngọt Ngào: Mỹ Nhân Song Tu Hay Độc Lô Đỉnh?",
+      "minRealm": "KIM_DAN",
+      "narrative": "Một vị Tiên Tử tuyệt sắc nổi danh của Dao Trì Phái chủ động ngỏ lời mời ngươi cùng bế quan song tu tại Đào Hoa Động Phủ để đột phá Kim Đan viên mãn. Tuy nhiên, thần thức nhạy bén của ngươi phát hiện trong hương phấn thoang thoảng có pha lẫn một tia 'Toái Hồn Tán' – kịch độc chuyên dùng để biến đạo lữ thành hình nhân lô đỉnh hút cạn tu vi.",
+      "choices": {
+        "cauDao": {
+          "path": "CAU_DAO",
+          "label": "[Cẩu Đạo] Giả vờ đau bụng thổ tả vì tẩu hỏa nhập ma, viện cớ từ chối rồi lập tức đổi động phủ dọn nhà",
+          "actionText": "Miệng phun bọt mép giả điên giả dại, vái lạy xin lỗi tiên tử rồi suốt đêm dọn sạch động phủ đào tẩu ngàn dặm.",
+          "outcomeNarrative": "Nữ tu tức giận nhưng không thể cưỡng ép ra tay. Ngươi bảo toàn được nguyên dương tinh thuần, tuy mất mặt trước giới tu tiên nhưng giữ trọn cái mạng nhỏ sống thêm trăm tuổi.",
+          "effects": {
+            "lifespan": 0,
+            "qi": 0,
+            "pillToxin": 0,
+            "karma": -5,
+            "divineSense": 15
+          }
+        },
+        "tranhDoat": {
+          "path": "TRANH_DOAT",
+          "label": "[Tranh Đoạt] Tương kế tựu kế, vào động phủ liền kích hoạt Kiếm Trận chém chết độc phụ, đoạt sạch tài bảo",
+          "actionText": "Vừa bước chân vào phòng hoa liền phóng ra 36 thanh Thanh Trúc Kiếm bao vây kết liễu nữ tu không cho kịp thở!",
+          "outcomeNarrative": "Nữ tu kinh hoàng chống cự nhưng bị kiếm trận băm thành từng mảnh. Ngươi đoạt được Túi Trữ Vật chứa đầy cực phẩm linh thạch cùng đan dược của Dao Trì Phái, nhưng bị phái này phát lệnh truy nã toàn cảnh.",
+          "effects": {
+            "lifespan": -5,
+            "qi": 1200,
+            "pillToxin": 10,
+            "karma": 50,
+            "divineSense": 40
+          }
+        },
+        "anNhanTaDao": {
+          "path": "AN_NHAN_TA_DAO",
+          "label": "[Ẩn Nhẫn / Tà Đạo] Uống trước Nghịch Huyết Đan, lúc song tu đảo ngược trận pháp biến nàng thành Lô Đỉnh của chính mình",
+          "actionText": "Hùa theo cuộc vui, chờ đến thời khắc âm dương giao hòa then chốt liền phát động Nghịch Chuyển Càn Khôn Đại Pháp, cưỡng ép hút sạch linh âm nguyên khí của nàng!",
+          "outcomeNarrative": "Nữ tu dung nhan héo rũ, tu vi Kim Đan bị ngươi hút cạn biến thành phàm nhân già nua. Tu vi ngươi bạo trướng chạm ngưỡng Nguyên Anh Kỳ, nhưng sát khí và nghiệp chướng quấn thân dày đặc như mây đen!",
+          "effects": {
+            "lifespan": 50,
+            "qi": 3000,
+            "pillToxin": 20,
+            "karma": 85,
+            "divineSense": 70
+          }
+        }
+      }
+    }
+  ]
+}
