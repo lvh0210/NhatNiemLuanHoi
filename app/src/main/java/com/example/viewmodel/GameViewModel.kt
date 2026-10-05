@@ -52,6 +52,7 @@ data class GameUiState(
     val qiState: QiState = QiState.BINH_ON,
     val pillToxicity: Int = 0, // 0 - 100%
     val satKhi: Int = 0,       // Nghiệp Lực / Sát Khí
+    val hungDanh: Int = 0,     // Trục Hung Danh (Ma Tu) vs Ẩn Nhẫn (Cẩu Tu)
     val anNhanTri: Int = 10,   // Ẩn Nhẫn Trị / Cẩu Đạo
     val daoTam: Int = 80,      // Đạo Tâm (0-100)
     val spiritStones: Long = 180L,
@@ -60,6 +61,11 @@ data class GameUiState(
     val thanThuc: Int = 50,
     val canCot: Int = 50,
     val ngoTinh: Int = 50,
+    val caveGrade: CaveGrade = CaveGrade.HA_PHAM,
+    val tuLinhTranLevel: Int = 1,
+    val sealedVault: SealedVault? = null,
+    val hasVengefulGhost: Boolean = false,
+    val sectContribution: Int = 60,
     val hasRemnantSoul: Boolean = true,
     val remnantSoulBond: Int = 40,
     val remnantSoulPower: Int = 35,
@@ -395,5 +401,37 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun dismissDarkEvent() {
         gameEngine.dismissDarkEvent()
+    }
+
+    fun withstandTribulationWave(defensiveItemId: String?, sacrificeArtifact: Boolean = false) {
+        gameEngine.withstandTribulationWave(defensiveItemId, sacrificeArtifact)
+    }
+
+    fun upgradeTuLinhTran() {
+        gameEngine.upgradeTuLinhTran()
+    }
+
+    fun sealVaultInDeath(location: String, stones: Long, itemId: String?) {
+        gameEngine.sealVaultInDeath(location, stones, itemId)
+    }
+
+    fun claimSealedVault() {
+        gameEngine.claimSealedVault()
+    }
+
+    fun dispatchDisciple(discipleId: String, taskType: String) {
+        gameEngine.dispatchDisciple(discipleId, taskType)
+    }
+
+    fun setSubstituteDisciple(discipleId: String) {
+        gameEngine.setSubstituteDisciple(discipleId)
+    }
+
+    fun contributeToSect(stones: Long) {
+        gameEngine.contributeToSect(stones)
+    }
+
+    fun exchangeSectItem(itemId: String) {
+        gameEngine.exchangeSectItem(itemId)
     }
 }

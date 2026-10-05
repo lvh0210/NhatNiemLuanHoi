@@ -26,7 +26,8 @@ import com.example.viewmodel.GameUiState
 @Composable
 fun ToaHoaDialog(
     state: GameUiState,
-    onOpenLuanHoiMirror: () -> Unit
+    onOpenLuanHoiMirror: () -> Unit,
+    onSealVault: (location: String, stones: Long, itemId: String?) -> Unit = { _, _, _ -> }
 ) {
     val earnedCongDuc = 50 + (state.realm.ordinal * 100) + (state.subStage * 15) + (state.age / 2)
 
@@ -154,7 +155,65 @@ fun ToaHoaDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // DI TRẠCH & HUYẾT THÙ TRUY KIẾP
+                var isVaultSealed by androidx.compose.runtime.remember { androidx.compose.runtime.mutableStateOf(state.sealedVault != null && !state.sealedVault.isFound) }
+                Surface(
+                    color = DarkSlate,
+                    shape = RoundedCornerShape(10.dp),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, if (state.hungDanh >= 50) BloodRed else AncientAmber),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(10.dp)) {
+                        Text(
+                            text = "Động Phủ Di Trạch & Huyết Thù Kiếp Sau",
+                            color = GoldenSun,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = if (isVaultSealed) "Đã niêm phong di trạch! Kiếp sau có thể dùng diễn toán thiên cơ để đào lại."
+                            else "Trước khi nhắm mắt, phong ấn linh thạch/bảo vật dư thừa tại Động Phủ để kiếp sau đào lại.",
+                            color = TextSecondary,
+                            fontSize = 10.5.sp,
+                            lineHeight = 15.sp
+                        )
+
+                        if (!isVaultSealed && state.spiritStones > 0) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                            val stonesToSeal = state.spiritStones / 2
+                            Button(
+                                onClick = {
+                                    onSealVault("Thiên Trúc Cổ Động", stonesToSeal, state.inventory.firstOrNull()?.id)
+                                    isVaultSealed = true
+                                },
+                                modifier = Modifier.fillMaxWidth().height(34.dp),
+                                colors = ButtonDefaults.buttonColors(containerColor = AncientAmber)
+                            ) {
+                                Text(
+                                    text = "Niêm Phong $stonesToSeal LT (Thiên Trúc Cổ Động)",
+                                    fontSize = 11.sp,
+                                    color = VoidBlack,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+
+                        if (state.hungDanh >= 50 || state.satKhi >= 50) {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Text(
+                                text = "Huyết Thù Truy Kiếp: Sát khí/Hung danh kiếp này quá nặng (${state.hungDanh})! Kiếp sau dính 'Oan Hồn Bám Thân', bị cừu địch truy sát!",
+                                color = BloodRed,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
 
                 // Action Button to open Reincarnation Mirror
                 Button(

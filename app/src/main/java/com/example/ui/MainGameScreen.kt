@@ -113,7 +113,8 @@ fun MainGameScreen(
                     onConsumePill = { item -> viewModel.consumePill(item) },
                     onTanDoc = { years -> viewModel.tanDoc(years) },
                     onConsultOldDemon = { viewModel.consultOldDemon() },
-                    onTriggerDarkEvent = { viewModel.triggerDarkEvent() }
+                    onTriggerDarkEvent = { viewModel.triggerDarkEvent() },
+                    onUpgradeTuLinhTran = { viewModel.upgradeTuLinhTran() }
                 )
                 GameTab.THIEN_CO -> ThienCoTab(
                     state = state,
@@ -128,11 +129,16 @@ fun MainGameScreen(
                 GameTab.TONG_MON -> TongMonTab(
                     state = state,
                     onNourishEgg = { viewModel.nourishBeastEgg() },
-                    onRecruitDisciple = { viewModel.recruitDisciple() }
+                    onRecruitDisciple = { viewModel.recruitDisciple() },
+                    onDispatchDisciple = { discId, task -> viewModel.dispatchDisciple(discId, task) },
+                    onSetSubstitute = { discId -> viewModel.setSubstituteDisciple(discId) },
+                    onContributeSect = { stones -> viewModel.contributeToSect(stones) },
+                    onExchangeSectItem = { itemId -> viewModel.exchangeSectItem(itemId) }
                 )
                 GameTab.LUAN_HOI -> LuanHoiTab(
                     state = state,
-                    onOpenLuanHoiGacha = { viewModel.openLuanHoiMirror() }
+                    onOpenLuanHoiGacha = { viewModel.openLuanHoiMirror() },
+                    onClaimVault = { viewModel.claimSealedVault() }
                 )
             }
         }
@@ -142,7 +148,8 @@ fun MainGameScreen(
     if (state.isDead && !state.showLuanHoiDialog) {
         ToaHoaDialog(
             state = state,
-            onOpenLuanHoiMirror = { viewModel.openLuanHoiMirror() }
+            onOpenLuanHoiMirror = { viewModel.openLuanHoiMirror() },
+            onSealVault = { loc, stones, item -> viewModel.sealVaultInDeath(loc, stones, item) }
         )
     }
 
@@ -182,7 +189,7 @@ fun MainGameScreen(
         TribulationDialog(
             tribulation = state.tribulation,
             inventory = state.inventory,
-            onWithstandWave = { itemId -> viewModel.withstandTribulationWave(itemId) },
+            onWithstandWave = { itemId, sacrifice -> viewModel.withstandTribulationWave(itemId, sacrifice) },
             onAnswerTamMa = { choiceIdx -> viewModel.answerTamMa(choiceIdx) }
         )
     }

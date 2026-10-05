@@ -25,7 +25,11 @@ import com.example.viewmodel.GameUiState
 fun TongMonTab(
     state: GameUiState,
     onNourishEgg: () -> Unit,
-    onRecruitDisciple: () -> Unit
+    onRecruitDisciple: () -> Unit,
+    onDispatchDisciple: (discipleId: String, taskType: String) -> Unit = { _, _ -> },
+    onSetSubstitute: (discipleId: String) -> Unit = {},
+    onContributeSect: (stones: Long) -> Unit = {},
+    onExchangeSectItem: (itemId: String) -> Unit = {}
 ) {
     val egg = state.beastEgg
 
@@ -287,11 +291,29 @@ fun TongMonTab(
                                             }
                                         }
 
-                                        Text(
-                                            text = "Trung thành: ${disc.loyalty}%",
-                                            color = if (disc.loyalty < 40) FatalPoison else SpiritCyan,
-                                            fontSize = 10.5.sp
-                                        )
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            if (disc.isSubstitute) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(RoundedCornerShape(4.dp))
+                                                        .background(BloodRed)
+                                                        .padding(horizontal = 5.dp, vertical = 1.dp)
+                                                ) {
+                                                    Text(
+                                                        text = "THẾ THÂN",
+                                                        color = TextPrimary,
+                                                        fontSize = 9.5.sp,
+                                                        fontWeight = FontWeight.Bold
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.width(6.dp))
+                                            }
+                                            Text(
+                                                text = "Trung thành: ${disc.loyalty}%",
+                                                color = if (disc.loyalty < 40) FatalPoison else SpiritCyan,
+                                                fontSize = 10.5.sp
+                                            )
+                                        }
                                     }
 
                                     Spacer(modifier = Modifier.height(3.dp))
@@ -302,11 +324,182 @@ fun TongMonTab(
                                         fontSize = 11.sp,
                                         lineHeight = 15.sp
                                     )
+
+                                    Spacer(modifier = Modifier.height(6.dp))
+
+                                    // Action buttons for disciple
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        OutlinedButton(
+                                            onClick = { onDispatchDisciple(disc.id, "Hái Linh Thảo & Đào Mỏ") },
+                                            modifier = Modifier.weight(1f).height(32.dp),
+                                            contentPadding = PaddingValues(horizontal = 6.dp),
+                                            border = androidx.compose.foundation.BorderStroke(1.dp, SpiritCyan)
+                                        ) {
+                                            Text(text = "Sai Phái Lịch Luyện", fontSize = 10.5.sp, color = SpiritCyan)
+                                        }
+
+                                        OutlinedButton(
+                                            onClick = { onSetSubstitute(disc.id) },
+                                            modifier = Modifier.weight(1f).height(32.dp),
+                                            contentPadding = PaddingValues(horizontal = 6.dp),
+                                            border = androidx.compose.foundation.BorderStroke(1.dp, if (disc.isSubstitute) BloodRed else AncientAmber)
+                                        ) {
+                                            Text(
+                                                text = if (disc.isSubstitute) "Hủy Thế Thân" else "Chỉ Định Thế Thân",
+                                                fontSize = 10.5.sp,
+                                                color = if (disc.isSubstitute) BloodRed else GoldenSun
+                                            )
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
                 }
+            }
+        }
+
+        // SECTION 3: TÔNG MÔN CỐNG HIẾN & ĐAN CÁC (TÔNG MÔN KHẢO HẠCH)
+        item {
+            Surface(
+                color = DarkSlate,
+                shape = RoundedCornerShape(12.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, AncientAmber),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.AccountBalance,
+                                contentDescription = "Tông môn",
+                                tint = GoldenSun,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Tông Môn Cống Hiến & Đan Các",
+                                color = GoldenSun,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Text(
+                            text = "${state.sectContribution} Cống Hiến",
+                            color = SpiritCyan,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "Đóng góp tài nguyên cho sơn môn để đổi lấy các đan dược đột phá độc quyền và bảo vật trấn tông mà chợ đen không thể mua được.",
+                        color = TextSecondary,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(
+                        onClick = { onContributeSect(100L) },
+                        modifier = Modifier.fillMaxWidth().height(38.dp),
+                        enabled = state.spiritStones >= 100,
+                        colors = ButtonDefaults.buttonColors(containerColor = AncientAmber)
+                    ) {
+                        Text(
+                            text = if (state.spiritStones < 100) "Thiếu Linh Thạch (Cần 100 LT)" else "Dâng Nạp 100 LT (+100 Cống Hiến)",
+                            fontSize = 11.5.sp,
+                            color = VoidBlack,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "VẬT PHẨM ĐỘC QUYỀN ĐAN CÁC:",
+                        color = TextMuted,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Item 1
+                    SectStoreRow(
+                        name = "Trúc Cơ Đan (Cực Phẩm)",
+                        desc = "Đan Các luyện chế, 100% tinh thuần, 0% Đan Độc",
+                        cost = 250,
+                        currentContribution = state.sectContribution,
+                        onBuy = { onExchangeSectItem("item_truc_co_dan_tong_mon") }
+                    )
+
+                    // Item 2
+                    SectStoreRow(
+                        name = "Ngưng Kim Đan",
+                        desc = "Cực phẩm đan dược giúp ngưng kết Kim Đan, tăng 500 Linh Khí",
+                        cost = 600,
+                        currentContribution = state.sectContribution,
+                        onBuy = { onExchangeSectItem("item_ngung_kim_dan") }
+                    )
+
+                    // Item 3
+                    SectStoreRow(
+                        name = "Hộ Tông Bí Phù",
+                        desc = "Phù lục trấn phái, tế xuất chặn 100% một đợt lôi kiếp",
+                        cost = 200,
+                        currentContribution = state.sectContribution,
+                        onBuy = { onExchangeSectItem("item_ho_tong_phu") }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectStoreRow(
+    name: String,
+    desc: String,
+    cost: Int,
+    currentContribution: Int,
+    onBuy: () -> Unit
+) {
+    Surface(
+        color = MysticSurface,
+        shape = RoundedCornerShape(8.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, MysticBorder),
+        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = name, color = TextPrimary, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(text = desc, color = TextSecondary, fontSize = 10.sp, lineHeight = 13.sp)
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            OutlinedButton(
+                onClick = onBuy,
+                enabled = currentContribution >= cost,
+                modifier = Modifier.height(30.dp),
+                contentPadding = PaddingValues(horizontal = 8.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, if (currentContribution >= cost) SpiritCyan else MysticBorder)
+            ) {
+                Text(text = "$cost Đ", fontSize = 10.5.sp, color = if (currentContribution >= cost) SpiritCyan else TextMuted)
             }
         }
     }

@@ -32,7 +32,8 @@ fun DongPhuTab(
     onConsumePill: (item: InventoryItem) -> Unit,
     onTanDoc: (years: Int) -> Unit,
     onConsultOldDemon: () -> Unit,
-    onTriggerDarkEvent: () -> Unit = {}
+    onTriggerDarkEvent: () -> Unit = {},
+    onUpgradeTuLinhTran: () -> Unit = {}
 ) {
     val remainingLifespan = maxOf(0, state.maxLifespan - state.age)
     val pillItems = state.inventory.filter { it.category == ItemCategory.DAN_DUOC && it.count > 0 }
@@ -91,7 +92,52 @@ fun DongPhuTab(
                         lineHeight = 15.sp
                     )
 
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // BẢNG TỤ LINH TRẬN & CHI PHÍ LINH THẠCH
+                    val yearlyCost = state.caveGrade.baseCostPerYear * state.tuLinhTranLevel
+                    val upgradeCost = state.tuLinhTranLevel * 200L
+                    Surface(
+                        color = MysticSurface,
+                        shape = RoundedCornerShape(8.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MysticBorder),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(8.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = "${state.caveGrade.label} (Cấp ${state.tuLinhTranLevel})",
+                                    color = SpiritCyan,
+                                    fontSize = 11.5.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                                Text(
+                                    text = "Duy trì: $yearlyCost LT/năm (Hết LT giảm 90% nạp khí)",
+                                    color = if (state.spiritStones < yearlyCost) FatalPoison else TextMuted,
+                                    fontSize = 10.sp
+                                )
+                            }
+                            OutlinedButton(
+                                onClick = onUpgradeTuLinhTran,
+                                modifier = Modifier.height(30.dp),
+                                enabled = state.spiritStones >= upgradeCost,
+                                contentPadding = PaddingValues(horizontal = 8.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, AncientAmber)
+                            ) {
+                                Text(
+                                    text = "Nâng Cấp ($upgradeCost LT)",
+                                    fontSize = 10.sp,
+                                    color = GoldenSun
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
 
                     // Buttons: 1 năm, 3 năm, 5 năm, 10 năm
                     Row(

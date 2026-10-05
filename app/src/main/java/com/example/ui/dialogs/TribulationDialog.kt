@@ -30,13 +30,13 @@ import com.example.viewmodel.TribulationState
 fun TribulationDialog(
     tribulation: TribulationState,
     inventory: List<InventoryItem>,
-    onWithstandWave: (defensiveItemId: String?) -> Unit,
+    onWithstandWave: (defensiveItemId: String?, sacrificeArtifact: Boolean) -> Unit,
     onAnswerTamMa: (choiceIndex: Int) -> Unit
 ) {
     if (!tribulation.isActive) return
 
     val defensiveItems = inventory.filter {
-        (it.category == ItemCategory.PHU_LUC || it.category == ItemCategory.PHAP_BAO) && it.defValue > 0 && it.count > 0
+        (it.category == ItemCategory.PHU_LUC || it.category == ItemCategory.PHAP_BAO) && (it.defValue > 0 || it.isSacrificable) && it.count > 0
     }
 
     Dialog(
@@ -122,27 +122,55 @@ fun TribulationDialog(
 
                     if (defensiveItems.isNotEmpty()) {
                         defensiveItems.forEach { item ->
-                            OutlinedButton(
-                                onClick = { onWithstandWave(item.id) },
+                            Surface(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 3.dp),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    contentColor = SpiritCyan
-                                ),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, SpiritCyan)
+                                color = MysticSurface,
+                                shape = RoundedCornerShape(8.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, MysticBorder)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Shield,
-                                    contentDescription = "Đỡ đòn",
-                                    modifier = Modifier.size(16.dp),
-                                    tint = SpiritCyan
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "Dùng ${item.name} (Chặn ${item.defValue} dmg - Còn ${item.count})",
-                                    fontSize = 12.sp
-                                )
+                                Column(modifier = Modifier.padding(8.dp)) {
+                                    Text(
+                                        text = "${item.name} (Còn ${item.count})",
+                                        color = GoldenSun,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        // Nút 1: Tế xuất pháp bảo gánh 100% lôi kiếp (Vỡ nát hoàn toàn)
+                                        Button(
+                                            onClick = { onWithstandWave(item.id, true) },
+                                            modifier = Modifier.weight(1f).height(36.dp),
+                                            colors = ButtonDefaults.buttonColors(containerColor = BloodRed),
+                                            shape = RoundedCornerShape(6.dp)
+                                        ) {
+                                            Text(
+                                                text = "TẾ XUẤT (Chặn 100% - Vỡ)",
+                                                fontSize = 10.5.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+
+                                        // Nút 2: Kích hoạt đỡ thông thường
+                                        OutlinedButton(
+                                            onClick = { onWithstandWave(item.id, false) },
+                                            modifier = Modifier.weight(1f).height(36.dp),
+                                            colors = ButtonDefaults.outlinedButtonColors(contentColor = SpiritCyan),
+                                            border = androidx.compose.foundation.BorderStroke(1.dp, SpiritCyan),
+                                            shape = RoundedCornerShape(6.dp)
+                                        ) {
+                                            Text(
+                                                text = "Đỡ Thường (-${item.defValue} dmg)",
+                                                fontSize = 10.5.sp
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     } else {
@@ -158,7 +186,7 @@ fun TribulationDialog(
 
                     // Direct impact button
                     Button(
-                        onClick = { onWithstandWave(null) },
+                        onClick = { onWithstandWave(null, false) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(44.dp)

@@ -58,24 +58,69 @@ class GameEngineCore(
         val actualYears = minOf(yearsRequested, remainingLifespan)
         val newAge = s.age + actualYears
 
-        // Tính toán linh khí tích lũy qua các năm
+        // 1. Chi phí duy trì Tụ Linh Trận (Linh Thạch tiêu hao mỗi năm)
+        val yearlyCost = s.caveGrade.baseCostPerYear * s.tuLinhTranLevel
+        val totalStoneCost = actualYears * yearlyCost
+        val hasEnoughStones = s.spiritStones >= totalStoneCost
+        val actualStonesDeducted = if (hasEnoughStones) totalStoneCost else s.spiritStones
+        val remainingStones = s.spiritStones - actualStonesDeducted
+
+        // 2. Tính toán linh khí tích lũy qua các năm
         val rootMultiplier = s.spiritRoot.speedMultiplier
         val qiStateMult = s.qiState.absorptionMultiplier
         val baseYearlyQi = 15L
 
+        // Nếu thiếu linh thạch: Tụ Linh Trận sụp đổ, tốc độ nạp linh khí giảm 90% (tu luyện phàm trần)
+        val arrayMultiplier = if (hasEnoughStones) {
+            s.caveGrade.speedMultiplier * (1f + (s.tuLinhTranLevel - 1) * 0.25f)
+        } else {
+            0.1f // Phạt 90%
+        }
+
         // Đan độc làm suy giảm khả năng hấp thụ linh khí
         val toxicityPenalty = (s.pillToxicity / 100f) * 0.5f
-        val effectiveRate = maxOf(0.1f, (rootMultiplier * qiStateMult) - toxicityPenalty)
+        val effectiveRate = maxOf(0.05f, (rootMultiplier * qiStateMult * arrayMultiplier) - toxicityPenalty)
         val gainedQi = (baseYearlyQi * actualYears * effectiveRate).toLong()
 
         val updatedQi = minOf(s.maxQi, s.qi + gainedQi)
 
-        addLog(
-            year = newAge,
-            tag = "Bế Quan",
-            message = "Ngươi bế quan $actualYears năm. Hấp thu thiên địa linh khí, tăng $gainedQi Linh Khí. (Tuổi: $newAge/${s.maxLifespan})",
-            type = "INFO"
-        )
+        if (!hasEnoughStones) {
+            addLog(
+                year = newAge,
+                tag = "Tụ Linh Trận",
+                message = "Linh Thạch cạn kiệt (-$actualStonesDeducted LT), Tụ Linh Trận sụp đổ! Tốc độ nạp linh khí giảm 90% (tu luyện phàm trần). Mau xuất sơn kiếm Linh Thạch!",
+                type = "WARNING"
+            )
+        } else {
+            addLog(
+                year = newAge,
+                tag = "Bế Quan",
+                message = "Ngươi bế quan $actualYears năm (Tiêu hao $actualStonesDeducted LT duy trì ${s.caveGrade.label} Cấp ${s.tuLinhTranLevel}). Tăng $gainedQi Linh Khí. (Tuổi: $newAge/${s.maxLifespan})",
+                type = "INFO"
+            )
+        }
+
+        // 3. Trục Đối Kháng: Ẩn Nhẫn vs Hung Danh (Tập kích / Chính phái truy sát / Huyết thù)
+        var updatedLifespan = s.maxLifespan
+        var updatedSatKhi = s.satKhi
+        if (s.hasVengefulGhost && Random.nextInt(100) < 25) {
+            addLog(
+                year = newAge,
+                tag = "Huyết Thù",
+                message = "OAN HỒN BÁM THÂN! Hậu duệ cừu tộc kiếp trước tìm đến sơn môn tập kích! Ngươi huyết chiến đẩy lùi thích khách nhưng tổn thọ 2 năm, sát khí +15.",
+                type = "DANGER"
+            )
+            updatedLifespan -= 2
+            updatedSatKhi += 15
+        } else if (s.hungDanh >= 60 && Random.nextInt(100) < 30) {
+            addLog(
+                year = newAge,
+                tag = "Chính Đạo Truy Sát",
+                message = "HUNG DANH MA ĐẠO QUÁ CAO! Trưởng lão danh môn chính phái hạ sơn bao vây động phủ! Ngươi liều mình đào tẩu, kinh mạch chấn thương tổn thọ 3 năm.",
+                type = "DANGER"
+            )
+            updatedLifespan -= 3
+        }
 
         // Kinh mạch tự bài tiết một phần nhỏ đan độc theo thời gian nếu bế quan đủ lâu
         var updatedToxicity = s.pillToxicity
@@ -91,6 +136,9 @@ class GameEngineCore(
         val updatedState = _gameState.value.copy(
             age = newAge,
             qi = updatedQi,
+            maxLifespan = updatedLifespan,
+            spiritStones = remainingStones,
+            satKhi = updatedSatKhi,
             pillToxicity = updatedToxicity,
             qiState = reevaluateQiState(updatedToxicity)
         )
@@ -252,7 +300,7 @@ class GameEngineCore(
         )
     }
 
-    fun withstandTribulationWave(defensiveItemId: String?) {
+    fun withstandTribulationWave(defensiveItemId: String?, sacrificeArtifact: Boolean = false) {
         val s = _gameState.value
         val trib = s.tribulation
         if (!trib.isActive) return
@@ -270,25 +318,52 @@ class GameEngineCore(
             val itemIdx = updatedInventory.indexOfFirst { it.id == defensiveItemId && it.count > 0 }
             if (itemIdx >= 0) {
                 val item = updatedInventory[itemIdx]
-                blockedDmg = item.defValue
-                if (item.count == 1) {
-                    updatedInventory.removeAt(itemIdx)
+                if (sacrificeArtifact) {
+                    // Tế xuất pháp bảo: gánh 100% sát thương đợt sét, bảo vật nát vụn
+                    blockedDmg = waveDmg
+                    if (item.count == 1) {
+                        updatedInventory.removeAt(itemIdx)
+                    } else {
+                        updatedInventory[itemIdx] = item.copy(count = item.count - 1)
+                    }
+                    logDefenseNote = " TẾ XUẤT PHÁP BẢO! Ngươi tế xuất [${item.name}] hộ thể, gánh trọn vẹn 100% lôi kiếp đợt này rồi nát vụn thành tro bụi!"
                 } else {
-                    updatedInventory[itemIdx] = item.copy(count = item.count - 1)
+                    blockedDmg = item.defValue
+                    if (item.count == 1) {
+                        updatedInventory.removeAt(itemIdx)
+                    } else {
+                        updatedInventory[itemIdx] = item.copy(count = item.count - 1)
+                    }
+                    logDefenseNote = " Ngươi kích hoạt [${item.name}] đỡ được $blockedDmg sát thương!"
                 }
-                logDefenseNote = " Ngươi kích hoạt [${item.name}] đỡ được $blockedDmg sát thương!"
             }
         }
 
-        val damageTaken = maxOf(0, waveDmg - blockedDmg)
+        var damageTaken = maxOf(0, waveDmg - blockedDmg)
         var updatedLifespan = s.maxLifespan
         var updatedCanCot = s.canCot
+        var updatedDisciples = s.disciples
+        var updatedSatKhi = s.satKhi
+        var updatedDaoTam = s.daoTam
 
         if (damageTaken > 0) {
             val lifespanLoss = (damageTaken / 50).coerceAtLeast(1)
             updatedLifespan -= lifespanLoss
             updatedCanCot = maxOf(10, updatedCanCot - 2)
             logDefenseNote += " Lôi điện đánh trúng thân thể! Trọng thương, tổn thất $lifespanLoss năm thọ nguyên!"
+
+            // Kiểm tra Đệ Tử Thế Thân nếu nhận đòn chí mạng
+            val subIdx = s.disciples.indexOfFirst { it.isSubstitute }
+            if (updatedLifespan <= s.age && subIdx >= 0) {
+                val subDisc = s.disciples[subIdx]
+                val mutDisciples = s.disciples.toMutableList()
+                mutDisciples.removeAt(subIdx)
+                updatedDisciples = mutDisciples
+                updatedLifespan = s.age + 5 // Bảo toàn mạng sống
+                updatedSatKhi += 35
+                updatedDaoTam = maxOf(10, updatedDaoTam - 15)
+                logDefenseNote += " [HÌNH NHÂN THẾ THÂN] Trong giây phút nguy cấp, đệ tử thế thân [${subDisc.name}] lao ra đỡ thay đòn hủy diệt! Đệ tử tan biến, ngươi giữ được mạng nhỏ (Sát khí +35, Đạo tâm -15)."
+            }
         }
 
         addLog(
@@ -303,6 +378,7 @@ class GameEngineCore(
                 s.copy(
                     maxLifespan = updatedLifespan,
                     inventory = updatedInventory,
+                    disciples = updatedDisciples,
                     tribulation = TribulationState(isActive = false)
                 )
             )
@@ -316,6 +392,9 @@ class GameEngineCore(
                     maxLifespan = updatedLifespan,
                     canCot = updatedCanCot,
                     inventory = updatedInventory,
+                    disciples = updatedDisciples,
+                    satKhi = updatedSatKhi,
+                    daoTam = updatedDaoTam,
                     tribulation = trib.copy(currentWave = trib.currentWave + 1)
                 )
             )
@@ -326,18 +405,28 @@ class GameEngineCore(
 
     private fun prepareTamMaOrdeal(lifespan: Int, canCot: Int, inventory: List<InventoryItem>) {
         val s = _gameState.value
-        val (q, choiceA, choiceB) = if (s.satKhi > 40) {
-            Triple(
-                "Tâm ma hiện ra oán hồn những kẻ ngươi từng sát hại cướp đoạt tài bảo: 'Ngươi vì tu tiên mà sát phạt vô số, tay nhuốm máu tươi, hôm nay đền mạng đi!'",
-                "[Cắn rứt - Hoang mang]: Đạo tâm dao động, hối hận vì hành vi quá khứ.",
-                "[Chém đứt tâm ma - Ma Đạo Vô Tình]: 'Đường tu tiên vốn là nhược nhục cường thực, chém chết ngươi cũng như dẫm bẹp một con kiến!'"
-            )
-        } else {
-            Triple(
-                "Tâm ma biến hóa thành hình bóng người thân, sư môn hoặc chấp niệm kiếp trước: 'Tu tiên tịch mịch ngàn năm, quay đầu lại chỉ còn cát bụi. Ngươi tu để làm gì?'",
-                "[Chính Đạo Kiên Định]: 'Ta tu tiên để bảo hộ thân nhân, nghịch thiên cải mệnh, bất hối!'",
-                "[Mê muội chấp niệm]: 'Có lẽ ta đã sai... tu tiên quả thực cô độc...'"
-            )
+        val (q, choiceA, choiceB) = when {
+            s.hungDanh >= 50 || s.satKhi > 40 -> {
+                Triple(
+                    "TÂM MA MA ĐẠO: Hiện ra oán hồn những kẻ ngươi từng sát hại cướp bảo: 'Ngươi vì tu tiên mà sát phạt vô số, hôm nay nợ máu phải trả bằng máu!'",
+                    "[Cắn rứt lương tâm]: Đạo tâm dao động, hối hận vì máu tanh quá khứ.",
+                    "[Nghịch Thiên Trảm Ma]: 'Tu tiên vốn là kẻ mạnh nuốt kẻ yếu! Lòng ta sắt đá không hối hận!' Vung kiếm chém tan oán hồn."
+                )
+            }
+            s.anNhanTri >= 40 -> {
+                Triple(
+                    "TÂM MA CẨU ĐẠO: Ảo ảnh cười nhạo: 'Cả đời ngươi cẩu thả nhẫn nhịn, cúi đầu trước kẻ mạnh, trốn chui trốn lủi như chuột bọ trong hang, có tư cách gì đắc đạo trường sinh?'",
+                    "[Mặc cảm hèn nhát]: Thừa nhận tâm tính yếu đuối, hoài nghi bản thân.",
+                    "[Kiên Định Cẩu Đạo]: 'Sống sót mới là chân lý tối thượng! Người chết không có tư cách đắc đạo!' Đạo tâm sáng rõ."
+                )
+            }
+            else -> {
+                Triple(
+                    "Tâm ma biến hóa thành hình bóng người thân, sư môn hoặc chấp niệm kiếp trước: 'Tu tiên tịch mịch ngàn năm, quay đầu lại chỉ còn cát bụi. Ngươi tu để làm gì?'",
+                    "[Chính Đạo Kiên Định]: 'Ta tu tiên để bảo hộ thân nhân, nghịch thiên cải mệnh, bất hối!'",
+                    "[Mê muội chấp niệm]: 'Có lẽ ta đã sai... tu tiên quả thực cô độc...'"
+                )
+            }
         }
 
         updateState(
@@ -845,12 +934,20 @@ class GameEngineCore(
         val newSatKhi = (s.satKhi + eff.karma).coerceAtLeast(0)
         val newThanThuc = (s.thanThuc + eff.divineSense).coerceAtLeast(10)
 
+        // Trục Đối Kháng: Ẩn Nhẫn vs Hung Danh
+        val (newAnNhan, newHungDanh) = when (choicePath) {
+            ChoicePath.CAU_DAO -> Pair(s.anNhanTri + 15, maxOf(0, s.hungDanh - 5))
+            ChoicePath.TRANH_DOAT -> Pair(maxOf(0, s.anNhanTri - 10), s.hungDanh + 20)
+            ChoicePath.AN_NHAN_TA_DAO -> Pair(maxOf(0, s.anNhanTri - 15), s.hungDanh + 35)
+        }
+
         val statSummary = buildString {
             if (eff.lifespan != 0) append("Thọ ${if (eff.lifespan > 0) "+${eff.lifespan}" else "${eff.lifespan}"}n ")
             if (eff.qi != 0L) append("Khí ${if (eff.qi > 0) "+${eff.qi}" else "${eff.qi}"} ")
             if (eff.pillToxin != 0) append("Độc ${if (eff.pillToxin > 0) "+${eff.pillToxin}%" else "${eff.pillToxin}%"} ")
             if (eff.karma != 0) append("Sát ${if (eff.karma > 0) "+${eff.karma}" else "${eff.karma}"} ")
-            if (eff.divineSense != 0) append("Thức ${if (eff.divineSense > 0) "+${eff.divineSense}" else "${eff.divineSense}"}")
+            if (eff.divineSense != 0) append("Thức ${if (eff.divineSense > 0) "+${eff.divineSense}" else "${eff.divineSense}"} ")
+            if (choicePath == ChoicePath.CAU_DAO) append("Ẩn Nhẫn +15") else append("Hung Danh +${if (choicePath == ChoicePath.TRANH_DOAT) 20 else 35}")
         }.trim()
 
         addLog(
@@ -867,6 +964,8 @@ class GameEngineCore(
                 pillToxicity = newPillToxin,
                 satKhi = newSatKhi,
                 thanThuc = newThanThuc,
+                anNhanTri = newAnNhan,
+                hungDanh = newHungDanh,
                 darkEventResultNarrative = "${choice.outcomeNarrative}\n[$statSummary]",
                 activeDarkEvent = null
             )
@@ -879,6 +978,165 @@ class GameEngineCore(
 
     fun dismissDarkEvent() {
         updateState(_gameState.value.copy(activeDarkEvent = null, darkEventResultNarrative = null))
+    }
+
+    /**
+     * Nâng cấp Tụ Linh Trận Động Phủ
+     */
+    fun upgradeTuLinhTran() {
+        val s = _gameState.value
+        val upgradeCost = s.tuLinhTranLevel * 200L
+        if (s.spiritStones < upgradeCost) {
+            addLog(s.age, "Động Phủ", "Không đủ Linh Thạch để nâng cấp Tụ Linh Trận (Cần $upgradeCost LT)!", "WARNING")
+            return
+        }
+        val nextLevel = s.tuLinhTranLevel + 1
+        val nextGrade = when (nextLevel) {
+            1 -> CaveGrade.HA_PHAM
+            2 -> CaveGrade.TRUNG_PHAM
+            3 -> CaveGrade.THUONG_PHAM
+            else -> CaveGrade.CUC_PHAM
+        }
+        addLog(s.age, "Tụ Linh Trận", "Tiêu hao $upgradeCost Linh Thạch nâng cấp Tụ Linh Trận lên Cấp $nextLevel (${nextGrade.label})! Tốc độ hấp thu linh khí tăng vọt.", "SUCCESS")
+        updateState(s.copy(spiritStones = s.spiritStones - upgradeCost, tuLinhTranLevel = nextLevel, caveGrade = nextGrade))
+    }
+
+    /**
+     * Niêm Phong Động Phủ Di Trạch trước khi chuyển thế (Cross-run Persistence)
+     */
+    fun sealVaultInDeath(location: String = "Thiên Trúc Cổ Động", stonesToSeal: Long = 0L, itemId: String? = null) {
+        val s = _gameState.value
+        val actualStones = minOf(stonesToSeal, s.spiritStones)
+        val item = s.inventory.firstOrNull { it.id == itemId }
+        val vault = SealedVault(
+            stones = actualStones,
+            itemName = item?.name,
+            location = location,
+            generation = s.generation,
+            isFound = false
+        )
+        // Nếu hung danh cao: Kiếp sau dính Huyết Thù Oan Hồn Bám Thân!
+        val willHaveGhost = s.hungDanh >= 50 || s.satKhi >= 50
+        updateState(
+            s.copy(
+                sealedVault = vault,
+                spiritStones = s.spiritStones - actualStones,
+                hasVengefulGhost = willHaveGhost
+            )
+        )
+        addLog(s.age, "Di Trạch", "Đã niêm phong $actualStones Linh Thạch ${if (item != null) "cùng bảo vật [${item.name}]" else ""} tại $location cho hậu kiếp!" +
+                (if (willHaveGhost) " [CẢNH BÁO] Do sát khí kiếp này quá nặng, kiếp sau bị Oan Hồn Bám Thân, cừu tộc truy sát!" else ""), "INFO")
+    }
+
+    /**
+     * Khai mở Động Phủ Di Trạch từ kiếp trước
+     */
+    fun claimSealedVault() {
+        val s = _gameState.value
+        val vault = s.sealedVault
+        if (vault == null || vault.isFound) {
+            addLog(s.age, "Di Trạch", "Không tìm thấy động phủ di trạch nào của tiền kiếp!", "WARNING")
+            return
+        }
+        updateState(
+            s.copy(
+                spiritStones = s.spiritStones + vault.stones,
+                sealedVault = vault.copy(isFound = true)
+            )
+        )
+        addLog(s.age, "Di Trạch", "Khai mở thành công Động Phủ Di Trạch tại ${vault.location}! Thu hồi ${vault.stones} Linh Thạch ${if (vault.itemName != null) "và di vật [${vault.itemName}]" else ""} từ kiếp thứ ${vault.generation}!", "SUCCESS")
+    }
+
+    /**
+     * Sai phái đệ tử đi lịch luyện (Idle Gathering)
+     */
+    fun dispatchDisciple(discipleId: String, taskType: String) {
+        val s = _gameState.value
+        val discIdx = s.disciples.indexOfFirst { it.id == discipleId }
+        if (discIdx < 0) return
+        val disc = s.disciples[discIdx]
+        val updatedDisciples = s.disciples.toMutableList()
+
+        val roll = Random.nextInt(100)
+        when {
+            roll < 65 -> {
+                val stonesFound = Random.nextLong(60, 180)
+                addLog(s.age, "Tông Môn", "Đệ tử [${disc.name}] phụng mệnh đi $taskType, an toàn trở về dâng lên $stonesFound Linh Thạch!", "SUCCESS")
+                updatedDisciples[discIdx] = disc.copy(loyalty = minOf(100, disc.loyalty + 5))
+                updateState(s.copy(disciples = updatedDisciples, spiritStones = s.spiritStones + stonesFound, sectContribution = s.sectContribution + 20))
+            }
+            roll < 85 -> {
+                val stonesFound = Random.nextLong(200, 450)
+                addLog(s.age, "Kỳ Ngộ", "Đại Hỷ! Đệ tử [${disc.name}] tại hiểm địa đốn ngộ đột phá tu vi, thu hoạch $stonesFound Linh Thạch và cống nạp tông môn!", "SUCCESS")
+                updatedDisciples[discIdx] = disc.copy(realm = "Trúc Cơ Sơ Kỳ", loyalty = minOf(100, disc.loyalty + 15))
+                updateState(s.copy(disciples = updatedDisciples, spiritStones = s.spiritStones + stonesFound, sectContribution = s.sectContribution + 50))
+            }
+            else -> {
+                updatedDisciples.removeAt(discIdx)
+                addLog(s.age, "Tang Sự", "TIN DỮ! Đệ tử [${disc.name}] đi $taskType tao ngộ yêu ma xé xác, chỉ kịp gửi về một phong Huyết Thư tuyệt mệnh...", "DANGER")
+                updateState(s.copy(disciples = updatedDisciples))
+            }
+        }
+    }
+
+    /**
+     * Chỉ định đệ tử làm Hình Nhân Thế Thân (Tà Đạo)
+     */
+    fun setSubstituteDisciple(discipleId: String) {
+        val s = _gameState.value
+        val updatedDisciples = s.disciples.map {
+            if (it.id == discipleId) it.copy(isSubstitute = !it.isSubstitute) else it.copy(isSubstitute = false)
+        }
+        val target = updatedDisciples.firstOrNull { it.id == discipleId }
+        val isSub = target?.isSubstitute == true
+        addLog(s.age, "Tà Thuật", if (isSub) "Đã khắc 'U Hồn Huyết Ấn' lên người đệ tử [${target?.name}], biến thành Hình Nhân Thế Thân đỡ đòn chí mạng!" else "Hủy bỏ huyết ấn thế thân của đệ tử [${target?.name}].", if (isSub) "WARNING" else "INFO")
+        updateState(s.copy(disciples = updatedDisciples))
+    }
+
+    /**
+     * Tông Môn Cống Hiến
+     */
+    fun contributeToSect(stones: Long = 100L) {
+        val s = _gameState.value
+        if (s.spiritStones < stones) {
+            addLog(s.age, "Tông Môn", "Linh Thạch không đủ để cống hiến!", "WARNING")
+            return
+        }
+        val gainedPoints = stones.toInt()
+        addLog(s.age, "Cống Hiến", "Dâng nạp $stones Linh Thạch vào kho Tông Môn, nhận $gainedPoints Điểm Cống Hiến.", "SUCCESS")
+        updateState(s.copy(spiritStones = s.spiritStones - stones, sectContribution = s.sectContribution + gainedPoints))
+    }
+
+    /**
+     * Đổi đan dược độc quyền từ Đan Các Tông Môn
+     */
+    fun exchangeSectItem(itemId: String) {
+        val s = _gameState.value
+        val cost = when (itemId) {
+            "item_truc_co_dan_tong_mon" -> 250
+            "item_ngung_kim_dan" -> 600
+            "item_ho_tong_phu" -> 200
+            else -> 100
+        }
+        if (s.sectContribution < cost) {
+            addLog(s.age, "Tông Môn", "Điểm cống hiến không đủ (Cần $cost điểm)!", "WARNING")
+            return
+        }
+        val newItem = when (itemId) {
+            "item_truc_co_dan_tong_mon" -> InventoryItem("item_truc_co_dan_tong_mon", "Trúc Cơ Đan (Cực Phẩm)", ItemCategory.DAN_DUOC, "Đan Các luyện chế, 100% thuần khiết, 0% Đan Độc!", count = 1, qiBonus = 400L, toxicityBonus = 0)
+            "item_ngung_kim_dan" -> InventoryItem("item_ngung_kim_dan", "Ngưng Kim Đan", ItemCategory.DAN_DUOC, "Cực phẩm đan dược giúp ngưng kết Kim Đan, tăng 500 Linh Khí.", count = 1, qiBonus = 500L, toxicityBonus = 5)
+            "item_ho_tong_phu" -> InventoryItem("item_ho_tong_phu", "Hộ Tông Bí Phù", ItemCategory.PHU_LUC, "Phù lục trấn tông, có thể tế xuất chặn 100% lôi kiếp đợt sét!", count = 1, defValue = 9999, isSacrificable = true)
+            else -> InventoryItem("item_linh_thao", "Huyết Tinh Thảo", ItemCategory.LINH_THAO, "Linh thảo quý", count = 1)
+        }
+        val updatedInv = s.inventory.toMutableList()
+        val existIdx = updatedInv.indexOfFirst { it.id == newItem.id }
+        if (existIdx >= 0) {
+            updatedInv[existIdx] = updatedInv[existIdx].copy(count = updatedInv[existIdx].count + 1)
+        } else {
+            updatedInv.add(newItem)
+        }
+        addLog(s.age, "Tông Môn", "Dùng $cost Cống Hiến đổi được [${newItem.name}] từ Đan Các!", "SUCCESS")
+        updateState(s.copy(sectContribution = s.sectContribution - cost, inventory = updatedInv))
     }
 
     fun gambleAncientStone(tierCost: Long = 100L) {

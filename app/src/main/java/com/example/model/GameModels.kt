@@ -202,7 +202,31 @@ data class Disciple(
     val archetype: DiscipleArchetype,
     val realm: String,
     var loyalty: Int,
-    val specialTalent: String
+    val specialTalent: String,
+    var isSubstitute: Boolean = false,
+    var isDispatched: Boolean = false,
+    var currentTask: String? = null
+)
+
+/**
+ * Phẩm Cấp Động Phủ & Linh Mạch (Chi phí Bế quan & Tụ Linh Trận)
+ */
+enum class CaveGrade(val label: String, val speedMultiplier: Float, val baseCostPerYear: Long) {
+    HA_PHAM("Hạ Phẩm Linh Mạch", 1.0f, 5L),
+    TRUNG_PHAM("Trung Phẩm Linh Mạch", 1.5f, 12L),
+    THUONG_PHAM("Thượng Phẩm Linh Mạch", 2.2f, 25L),
+    CUC_PHAM("Cực Phẩm Linh Mạch", 3.2f, 50L)
+}
+
+/**
+ * Động Phủ Di Trạch kế thừa xuyên kiếp (Cross-run Persistence)
+ */
+data class SealedVault(
+    val stones: Long = 0L,
+    val itemName: String? = null,
+    val location: String = "Thiên Trúc Cổ Động",
+    val generation: Int = 1,
+    val isFound: Boolean = false
 )
 
 /**
@@ -217,7 +241,7 @@ data class BeastEggData(
 )
 
 /**
- * Vật phẩm trong túi trữ vật
+ * Vật phẩm trong túi trữ vật (Hỗ trợ Độ Bền & Tế Pháp Bảo)
  */
 enum class ItemCategory {
     DAN_DUOC, PHU_LUC, PHAP_BAO, KHOANG_THACH, DI_HOA, LINH_THAO
@@ -233,6 +257,9 @@ data class InventoryItem(
     val toxicityBonus: Int = 0,
     val lifespanCost: Int = 0,
     val defValue: Int = 0,
+    val durability: Int = 1,
+    val maxDurability: Int = 1,
+    val isSacrificable: Boolean = true,
     val sellPrice: Long = 10L
 )
 
