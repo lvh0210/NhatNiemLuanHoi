@@ -1,0 +1,6 @@
+{
+  "name": "Nhất Niệm Luân Hồi",
+  "description": "Game tu tiên roguelite màn hình dọc: Thọ nguyên, lôi kiếp, đan độc, dị thú, thiên cơ, luân hồi kính và chuyển thế cải mệnh.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

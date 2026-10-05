@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer celestial ring / Bagua orbit -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFD54F"
+        android:strokeWidth="2.2"
+        android:pathData="M 54,22 A 32,32 0 1 1 53.99,22 Z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFA000"
+        android:strokeWidth="1.0"
+        android:pathData="M 54,26 A 28,28 0 1 1 53.99,26 Z" />
+
+    <!-- 8 Trigram / Daoist Cardinal Marks -->
+    <path
+        android:fillColor="#FFCA28"
+        android:pathData="M 52,14 H 56 V 19 H 52 Z M 52,89 H 56 V 94 H 52 Z M 14,52 H 19 V 56 H 14 Z M 89,52 H 94 V 56 H 89 Z" />
+
+    <!-- Radiant Yin Yang / Reincarnation Mirror Body -->
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M 54,28 A 26,26 0 0 1 54,80 A 13,13 0 0 1 54,54 A 13,13 0 0 0 54,28 Z" />
+    <path
+        android:fillColor="#1C1829"
+        android:pathData="M 54,80 A 26,26 0 0 1 54,28 A 13,13 0 0 1 54,54 A 13,13 0 0 0 54,80 Z" />
+
+    <!-- Yin Yang Eye Orbs (Spiritual Qi Eyes) -->
+    <path
+        android:fillColor="#1C1829"
+        android:pathData="M 54,37 A 4.5,4.5 0 1 1 53.99,37 Z" />
+    <path
+        android:fillColor="#FFD54F"
+        android:pathData="M 54,63 A 4.5,4.5 0 1 1 53.99,63 Z" />
+
+    <!-- Core Spiritual Cyan Sparks -->
+    <path
+        android:fillColor="#4DD0E1"
+        android:pathData="M 54,39 A 2,2 0 1 1 53.99,39 Z M 54,65 A 2,2 0 1 1 53.99,65 Z" />
+
+    <!-- Flying Immortal Sword Silhouette through the center -->
+    <path
+        android:fillColor="#00E5FF"
+        android:pathData="M 53,20 L 55,20 L 55,48 L 53,48 Z" />
+</vector>

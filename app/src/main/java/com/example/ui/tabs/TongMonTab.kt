@@ -1,0 +1,313 @@
+package com.example.ui.tabs
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.model.DiscipleArchetype
+import com.example.ui.theme.*
+import com.example.viewmodel.GameUiState
+
+@Composable
+fun TongMonTab(
+    state: GameUiState,
+    onNourishEgg: () -> Unit,
+    onRecruitDisciple: () -> Unit
+) {
+    val egg = state.beastEgg
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 14.dp, vertical = 10.dp)
+            .testTag("tab_tong_mon"),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        // SECTION 1: ẤP TRỨNG DỊ THÚ (TINH HUYẾT GACHA - CƠ CHẾ 9)
+        item {
+            Surface(
+                color = DarkSlate,
+                shape = RoundedCornerShape(12.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MysticBorder),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Egg,
+                                contentDescription = "Trứng thú",
+                                tint = AncientAmber,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Ấp Trứng Dị Thú Bằng Tinh Huyết",
+                                color = GoldenSun,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Text(
+                            text = if (egg.isHatched) "Đã Nở" else "${egg.bloodNourishCount}/5 Giọt Máu",
+                            color = if (egg.isHatched) JadeGreen else FatalPoison,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "Nhỏ Tinh Huyết nuôi dưỡng Hỗn Độn Thú Noãn qua từng năm. Thuộc tính tinh huyết và nhân phẩm sẽ quyết định giống loài:\n• 70%: Hỏa Nha thông thường\n• 25%: Tam Túc Kim Ô (SSR Biến Dị)\n• 5%: Hung Thú Thao Thiết nuốt sạch kho linh dược rồi tẩu thoát!",
+                        color = TextSecondary,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    if (!egg.isHatched) {
+                        LinearProgressIndicator(
+                            progress = { egg.bloodNourishCount / 5f },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(6.dp)
+                                .clip(RoundedCornerShape(3.dp)),
+                            color = BloodRed,
+                            trackColor = MysticSurfaceVariant
+                        )
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        Button(
+                            onClick = onNourishEgg,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(42.dp)
+                                .testTag("btn_nourish_egg"),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = BloodAura,
+                                contentColor = TextPrimary
+                            ),
+                            enabled = state.qi >= 30
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.WaterDrop,
+                                contentDescription = "Tinh huyết",
+                                modifier = Modifier.size(15.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = if (state.qi < 30) "Linh Khí Không Đủ (<30)" else "Nhỏ Tinh Huyết Nuôi Trứng (Tiêu hao 30 Khí)",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    } else {
+                        // Hatched status
+                        Surface(
+                            color = MysticSurface,
+                            shape = RoundedCornerShape(8.dp),
+                            border = androidx.compose.foundation.BorderStroke(1.dp, GoldenSun.copy(alpha = 0.5f)),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Pets,
+                                    contentDescription = "Thú cưng",
+                                    tint = ImmortalGold,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        text = egg.beastName ?: "Dị Thú",
+                                        color = GoldenSun,
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "Phẩm cấp: ${egg.beastTier} • Kỹ năng: ${egg.beastSkill ?: "Trợ chiến"}",
+                                        color = SpiritCyan,
+                                        fontSize = 11.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // SECTION 2: ĐĂNG TIÊN BẢNG (GACHA TUYỂN ĐỆ TỬ ĐỘC LẠ - CƠ CHẾ 10)
+        item {
+            Surface(
+                color = DarkSlate,
+                shape = RoundedCornerShape(12.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, MysticBorder),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(modifier = Modifier.padding(14.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Groups,
+                                contentDescription = "Đệ tử",
+                                tint = SpiritCyan,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text(
+                                text = "Đăng Tiên Bảng (Tuyển Đệ Tử)",
+                                color = GoldenSun,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Text(
+                            text = "${state.disciples.size} Đệ Tử",
+                            color = SpiritCyan,
+                            fontSize = 11.5.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    Text(
+                        text = "Mở sơn môn chiêu nạp đồ đệ mang các archetype kinh điển:\n• [Khí Vận Chi Tử]: Linh căn phế nhưng vấp té nhặt được đồ xịn dâng sư phụ\n• [Phản Cốt Tử]: Thiên tài tu nhanh nhưng dễ ám sát sư phụ phản tông\n• [Chuyển Thế Lão Quái]: Tính tình quái đản, thỉnh thoảng chỉ điểm công pháp",
+                        color = TextSecondary,
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Button(
+                        onClick = onRecruitDisciple,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(42.dp)
+                            .testTag("btn_recruit_disciple"),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MysticSurfaceVariant,
+                            contentColor = GoldenSun
+                        ),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, AncientAmber),
+                        enabled = state.spiritStones >= 100
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.PersonAdd,
+                            contentDescription = "Chiêu mộ",
+                            modifier = Modifier.size(15.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = if (state.spiritStones < 100) "Thiếu Linh Thạch (Cần 100 LT)" else "Khai Sơn Chiêu Mộ Đệ Tử (100 LT)",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Disciples Roster
+                    if (state.disciples.isNotEmpty()) {
+                        state.disciples.forEach { disc ->
+                            val archColor = when (disc.archetype) {
+                                DiscipleArchetype.KHI_VAN_CHI_TU -> ImmortalGold
+                                DiscipleArchetype.PHAN_COT_TU -> BloodRed
+                                DiscipleArchetype.CHUYEN_THE_LAO_QUAI -> LightningPurple
+                                DiscipleArchetype.TRUNG_THANH_DE_TU -> JadeGreen
+                            }
+
+                            Surface(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 3.dp),
+                                color = MysticSurface,
+                                shape = RoundedCornerShape(8.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, archColor.copy(alpha = 0.5f))
+                            ) {
+                                Column(modifier = Modifier.padding(10.dp)) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Text(
+                                                text = disc.name,
+                                                color = TextPrimary,
+                                                fontSize = 13.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Box(
+                                                modifier = Modifier
+                                                    .clip(RoundedCornerShape(4.dp))
+                                                    .background(archColor.copy(alpha = 0.2f))
+                                                    .padding(horizontal = 5.dp, vertical = 1.dp)
+                                            ) {
+                                                Text(
+                                                    text = disc.archetype.title,
+                                                    color = archColor,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+
+                                        Text(
+                                            text = "Trung thành: ${disc.loyalty}%",
+                                            color = if (disc.loyalty < 40) FatalPoison else SpiritCyan,
+                                            fontSize = 10.5.sp
+                                        )
+                                    }
+
+                                    Spacer(modifier = Modifier.height(3.dp))
+
+                                    Text(
+                                        text = disc.specialTalent,
+                                        color = TextSecondary,
+                                        fontSize = 11.sp,
+                                        lineHeight = 15.sp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
